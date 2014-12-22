@@ -1,6 +1,4 @@
-#include "stdio.h"
-#include "string.h"
-#include "stdlib.h"
+#include "comfy.h"
 
 void replace_char_in_string(char find, char replace, char* string){
   char* found = string;
@@ -56,10 +54,4 @@ void create_guard(const char* filename, FILE* input, FILE* output){
 
   free(headername);
   free(simplename);
-}
-
-int main(int argc, char* argv[]){
-  FILE* input = fopen(argv[1], "r");
-  create_guard(argv[1], input, stdout);
-  fclose(input);
 }

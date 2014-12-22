@@ -27,3 +27,12 @@
 *.i*86
 *.x86_64
 *.hex
+
+# Build
+
+build/*
+
+# Python Garbage
+
+__pycache__/*
+*.pyc

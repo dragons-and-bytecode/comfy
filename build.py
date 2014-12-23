@@ -22,18 +22,18 @@ def gather_sources(source_dir):
             sources += gather_sources(file)
         elif is_sourcefile(file):
             sources += [file]
-            
+
     return sources
 
 def compile():
     print("Compiling...")
     sources = gather_sources(sources_dir)
     make_directories(build_dir)
-    call(["clang", "-o", "%s/comfy" % build_dir] + sources)
+    call(["clang", "-g", "-o", "%s/comfy" % build_dir] + sources)
 
 if __name__ == '__main__':
     target = argv[1] if len(argv) >= 2 else default_target
-    
+
     target_func = globals().get(target)
     if not target_func or not callable(target_func):
         print("Unknown target %s" % target, file=stderr)
@@ -41,4 +41,3 @@ if __name__ == '__main__':
     else:
         print("Building %s" % target)
         eval(target)()
-    

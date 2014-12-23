@@ -9,14 +9,16 @@ void create_guard(const char* filename, FILE* input, FILE* output);
 
 /* [files.c] */
 
+typedef char* string;
 
 typedef struct {
-  char* directory;
-  char* name_filter;
+  string directory;
+  string* filters;
+  int filters_size;
 } FileListing;
 
-FileListing* files_in         (const char* directoy);
-void         files_destroy    (FileListing* this);
-void         files_set_filter (FileListing* this, const char* filter);
+FileListing  files_in         (const string directoy);
+void         files_destroy    (FileListing this);
+void         files_add_filter (FileListing* this, const string filter);
 
 #endif

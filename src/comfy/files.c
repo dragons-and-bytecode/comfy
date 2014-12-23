@@ -23,22 +23,23 @@ void each_file(const char* dir_name, void (*action)(const char* filename)){
 
 
 
-FileListing* files_in(const char* directory){
+FileListing files_in(const string directory){
   assert(NULL != directory);
-  FileListing* this = malloc(sizeof(FileListing));
-  this->directory = malloc(strlen(directory) * sizeof(char));
-  strcpy(this->directory, directory);
-
+  FileListing this = {
+      .directory = directory,
+      .filters = malloc(sizeof(string))
+  };
+  this.filters[0] = NULL;
+  this.filters_size = 0;
   return this;
 }
 
-void files_destroy(FileListing* this){
-  free(this->directory);
-  free(this);
-}
-
-void files_set_filter (FileListing* this, const char* filter)
+void files_add_filter (FileListing* this, const string filter)
 {
-  this->name_filter = malloc(strlen(filter) * sizeof(char));
-  strcpy(this->name_filter, filter);
+    int size = this->filters_size + 1;
+    
+    realloc(this->filters, sizeof(string) * size);
+    this->filters[this->filters_size] = filter;
+    this->filters_size = size;
+    
 }

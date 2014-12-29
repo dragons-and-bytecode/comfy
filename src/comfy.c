@@ -11,6 +11,7 @@ int main(int argc, char* argv[])
     
     printf("source: %s\n", opt.get(&opt, "source", "."));   
     printf("target: %s\n", opt.get(&opt, "target", "."));
+    printf("watch : %i\n", opt.get_flag(&opt, "watch"));
     
     //FILE* input = fopen(argv[1], "r");
     //create_guard(argv[1], input, stdout);

@@ -1,6 +1,10 @@
 #ifndef __args_h__
 #define __args_h__
 
+#define bool int
+#define true 1
+#define false 0
+
 typedef struct _OPTIONS Options;
 
 struct _OPTIONS {
@@ -8,6 +12,7 @@ struct _OPTIONS {
     char** argv;
     
     char* (*get)(Options*, char*, char*);
+    bool (*get_flag)(Options*, char*);
 };
 
 

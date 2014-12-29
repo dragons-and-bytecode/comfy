@@ -36,3 +36,9 @@ build/*
 
 __pycache__/*
 *.pyc
+
+
+# Jeckyll
+
+_site/*
+

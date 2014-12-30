@@ -8,12 +8,12 @@ setup:
 	
 run: comfy
 	@echo ""
-	./build/comfy --target ~/tmp/out --watch
+	./build/comfy --src ./src --watch
 	@echo ""
 	
 debug: comfy
 	@echo ""
-	lldb -- ./build/comfy --target ~/tmp/out --watch
+	lldb -- ./build/comfy --src ./src --watch
 	@echo ""
 
 clean:

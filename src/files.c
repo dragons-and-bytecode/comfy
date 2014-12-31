@@ -2,8 +2,11 @@
 #include "dirent.h"
 #include "assert.h"
 #include "string.h"
+#include "sys/stat.h"
+#include "list.h"
+#include "fnmatch.h"
 
-void print_file(const char* filename){
+void print_file(const string filename){
   printf("%s", filename);
 }
 
@@ -28,18 +31,31 @@ void files_add_filter (FileListing* this, const string filter)
     
 }
 
-int __files_list(const FileListing* this, 
-                 FileMetadata* list,
-                 string path){
+bool files_filter_file(const FileListing* this, const string filename){
+    for (int i = 0; i < this->filters_size; i++){
+        string filter = this->filters[i];
+        bool negate = false;
+        if (0 == strncmp("!", filter, 1)){
+            filter++;
+            negate = true;
+        }
+        
+        if(0 == fnmatch(filter, filename, 0)){
+            return negate ? false : true;
+        }
+    }
+    return false;
+}
 
+List* __files_list(const FileListing* this, string path){
     DIR* d;
     d = opendir(path);
     if (!d)
-        return -1;
+        return NULL;
     
     struct dirent *dir;
     
-    int count = 0;
+    List* list = list_new();
     
     while ((dir = readdir(d)) != NULL) {
         if (0 == strcmp(".", dir->d_name) || 0 == strcmp("..", dir->d_name))
@@ -47,20 +63,34 @@ int __files_list(const FileListing* this,
         
         string inner_path; 
         asprintf(&inner_path, "%s/%s", path, dir->d_name);
-        int inner_count = __files_list(this, list, inner_path);
-        if (0 > inner_count){
-            printf("%s\n", dir->d_name);
-        } else {
-            count += inner_count; 
-        }
+        
+        List* inner_list = __files_list(this, inner_path);
+        
+        if (inner_list){
+            list_addall(list, inner_list);
+            list_free(inner_list);
+        } else if (files_filter_file(this, dir->d_name)){
+            
+            
+            struct stat stats;
+            stat(inner_path, &stats);
+            
+            FileMetadata* f_data = malloc(sizeof(FileMetadata));
+            f_data->name = dir->d_name;
+            f_data->path = inner_path;
+            f_data->last_update = stats.st_mtime;
+            
+            list_add(list, f_data);
+        } 
+        
         free(inner_path);
     }
     
     closedir(d);
-    return count;
+    return list;
 }
 
-int files_list(const FileListing* this, FileMetadata* list)
-{    
-    return __files_list(this, list, this->directory);
+List* files_list(const FileListing* this)
+{
+    return __files_list(this, this->directory);
 }

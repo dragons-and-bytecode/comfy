@@ -1,17 +1,15 @@
 #ifndef __comfy_h__
 #define __comfy_h__
 
+#include "base.h"
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
+#include "list.h"
 
 void create_guard(const char* filename, FILE* input, FILE* output);
 
 /* [files.c] */
-
-typedef char* string;
-
-typedef long int timestamp;
 
 typedef struct {
     string name;
@@ -44,6 +42,6 @@ void          files_add_filter (FileListing* this, const string filter);
  *
  * @returns the number of FileMetadatas created.
  */
-int files_list(const FileListing* this, FileMetadata* list);
+List* files_list(const FileListing* this);
 
 #endif

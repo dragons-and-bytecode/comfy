@@ -1,9 +1,7 @@
 #ifndef __args_h__
 #define __args_h__
 
-#define bool int
-#define true 1
-#define false 0
+#include "base.h"
 
 typedef struct _OPTIONS Options;
 

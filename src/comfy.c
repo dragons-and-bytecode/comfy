@@ -18,6 +18,8 @@ void watch_dir(string source, string target, bool continuous)
     
     if (continuous)
         printf("Watching '%s' ... (exit with Ctrl-C)\n\n", source);
+    else
+        printf("Compiling from '%s' into '%s'\n", source, target);
     
     timestamp last_update = 0;
     

@@ -31,6 +31,7 @@
 # Build
 
 build/*
+filetests/target/*
 
 # Python Garbage
 

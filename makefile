@@ -8,14 +8,27 @@ setup:
 	
 run: comfy
 	@echo ""
-	./build/comfy --src ./src --watch
+	./build/comfy --source ./src --watch
 	@echo ""
 	
 debug: comfy
 	@echo ""
-	lldb -- ./build/comfy --src ./src --watch
+	lldb -- ./build/comfy --source ./src --watch
 	@echo ""
 
+comfy_test:
+	clang $(CLAMG_ARGS) filetests/comfy_test.c -o build/comfy_test
+
+test: comfy comfy_test
+	@rm -rf filetests/target
+	@mkdir -p filetests/target
+	@echo ""
+	@echo ""
+	@./build/comfy --source ./filetests/source --target ./filetests/target
+	@echo ""
+	@echo ""
+	@./build/comfy_test ./filetests/source ./filetests/target ./filetests/expected
+	
 clean:
 	rm -rf build
 	rm -rf _site

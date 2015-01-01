@@ -1,7 +1,7 @@
 CLANG_ARGS = -g
 
 comfy: setup
-	clang $(CLANG_ARGS) src/*.c -o build/comfy
+	clang $(CLANG_ARGS) src/*.c src/features/*.c -o build/comfy
 	
 setup:
 	mkdir -p build

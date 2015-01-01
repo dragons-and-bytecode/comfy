@@ -1,4 +1,4 @@
-#include "comfy.h"
+#include "auto_includeguard.h"
 
 void replace_char_in_string(char find, char replace, char* string){
   char* found = string;

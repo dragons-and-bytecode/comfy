@@ -6,8 +6,8 @@
 #include "string.h"
 #include "stdlib.h"
 #include "list.h"
+#include "features/auto_includeguard.h"
 
-void create_guard(const char* filename, FILE* input, FILE* output);
 
 /* [files.c] */
 

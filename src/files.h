@@ -1,15 +1,11 @@
-#ifndef __comfy_h__
-#define __comfy_h__
+#ifndef __files_h__
+#define __files_h__
 
 #include "base.h"
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
 #include "list.h"
-#include "features/auto_includeguard.h"
-
-
-/* [files.c] */
 
 typedef struct {
     string name;

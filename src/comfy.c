@@ -2,10 +2,12 @@
  *@file comfy the main program
  *
  */
-#include "comfy.h"
+#include "files.h"
 #include "args.h"
 #include "list.h"
 #include "unistd.h"
+
+
 
 void watch_dir(string source, string target, bool continuous)
 {

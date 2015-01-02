@@ -21,6 +21,9 @@ typedef struct {
   int filters_size;
 } FileListing;
 
+FileMetadata* files_file_metadata(const string filename);
+void files_delete_file_metadata(FileMetadata* file);
+
 FileListing   files_in         (const string directoy);
 void          files_destroy    (FileListing* this);
 void          files_add_filter (FileListing* this, const string filter);

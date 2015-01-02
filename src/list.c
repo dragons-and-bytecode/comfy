@@ -37,6 +37,8 @@ void list_free(List* list){
 }
 
 void list_foreach(List* list, void (*callback)(List*, Item, int)){
+    if (!list) return;
+    
     for (int i = 0; i < list->count; i++){
         callback(list, list->items[i], i);
     }

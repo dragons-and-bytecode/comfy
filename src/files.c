@@ -47,6 +47,30 @@ bool files_filter_file(const FileListing* this, const string filename){
     return false;
 }
 
+FileMetadata* files_file_metadata(const string filename){
+    struct stat stats;
+    stat(filename, &stats);
+    
+    string path;
+    asprintf(&path, "%s", filename);
+    
+    FileMetadata* f_data = malloc(sizeof(FileMetadata));
+    f_data->name = rindex(path, '/')+1;
+    f_data->path = path;
+    f_data->last_update = stats.st_mtime;
+    
+    return f_data;
+}
+
+void files_delete_file_metadata(FileMetadata* file){
+    if (file){
+        if (file->path){
+            free(file->path);
+        }
+        free(file);
+    }
+}
+
 List* __files_list(const FileListing* this, string path){
     DIR* d;
     d = opendir(path);
@@ -69,21 +93,17 @@ List* __files_list(const FileListing* this, string path){
         if (inner_list){
             list_addall(list, inner_list);
             list_free(inner_list);
+            
         } else if (files_filter_file(this, dir->d_name)){
             
             
             struct stat stats;
             stat(inner_path, &stats);
-            
-            FileMetadata* f_data = malloc(sizeof(FileMetadata));
-            f_data->name = dir->d_name;
-            f_data->path = inner_path;
-            f_data->last_update = stats.st_mtime;
-            
-            list_add(list, f_data);
+            list_add(list, files_file_metadata(inner_path));
         } 
         
         free(inner_path);
+        
     }
     
     closedir(d);

@@ -17,7 +17,7 @@ debug: comfy
 	@echo ""
 
 comfy_test:
-	clang $(CLAMG_ARGS) filetests/comfy_test.c -o build/comfy_test
+	clang $(CLANG_ARGS) filetests/comfy_test.c -o build/comfy_test
 
 test: comfy comfy_test
 	@rm -rf filetests/target

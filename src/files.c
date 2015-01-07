@@ -49,7 +49,7 @@ bool files_filter_file(const FileListing* this, const string filename){
 
 FileMetadata* files_file_metadata(const string filename){
     struct stat stats;
-    stat(filename, &stats);
+    int statval = stat(filename, &stats);
     
     string path;
     asprintf(&path, "%s", filename);
@@ -58,6 +58,8 @@ FileMetadata* files_file_metadata(const string filename){
     f_data->name = rindex(path, '/')+1;
     f_data->path = path;
     f_data->last_update = stats.st_mtime;
+    
+    f_data->exists = (0 == statval); 
     
     return f_data;
 }

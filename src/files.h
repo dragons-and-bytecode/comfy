@@ -11,6 +11,7 @@ typedef struct {
     string name;
     string path;
     timestamp last_update;
+    bool exists;
 } FileMetadata;
 
 

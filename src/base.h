@@ -13,4 +13,11 @@ typedef int bool;
 #define false 0
 #endif
 
+/*
+ * String functions
+ */
+
+bool string_ends_with(string str, string phrase);
+string string_lowercase(string str);
+
 #endif

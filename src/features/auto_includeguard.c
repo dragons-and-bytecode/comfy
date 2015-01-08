@@ -1,5 +1,21 @@
 #include "auto_includeguard.h"
 
+bool _would_modify(ComfyFileBundle* bundle){
+    printf("Hahahaha\n");
+    return true;
+}
+
+void _process(ComfyFileBundle* bundle){
+    printf("Doing stuff!\n");
+}
+
+Feature* create_auto_incudeguard(){
+    Feature* f = malloc(sizeof(Feature));
+    f->would_modify = _would_modify;
+    f->process = _process;
+    return f;
+}
+
 void replace_char_in_string(char find, char replace, char* string){
   char* found = string;
 

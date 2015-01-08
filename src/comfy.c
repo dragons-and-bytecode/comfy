@@ -6,12 +6,33 @@
 #include "args.h"
 #include "list.h"
 #include "unistd.h"
+#include "features.h"
+
+List* features;
 
 void foreach_single_bundle(List* list, Item item, int index){
     ComfyFileBundle* bundle = (ComfyFileBundle*) item;
     
     printf("%s changed ...\n", bundle->source.name);
     
+    //read source file
+    //delete target files
+    
+    while(true){
+        bool modified = false;
+        
+        for (int i = 0; i < features->count; i++){
+            Feature* feature = list_get(features, i);
+            if (feature->would_modify(bundle)){
+                feature->process(bundle);
+                modified = true;
+            }
+        }
+        
+        if (!modified) break;
+    }
+    
+    //write target content to file(s)
 }
 
 void watch_dir(string source, string target, bool continuous)
@@ -47,7 +68,11 @@ int main(int argc, char* argv[])
     
     string source = opt.get(&opt, "source", ".");
     string target = opt.get(&opt, "target", ".");
+    
+    features = create_feature_list();
 
-    watch_dir(source, target, opt.get_flag(&opt, "watch"));  
+    watch_dir(source, target, opt.get_flag(&opt, "watch"));
+    
+    destroy_feature_list(features);
 
 }

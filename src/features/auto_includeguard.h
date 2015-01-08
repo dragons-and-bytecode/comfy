@@ -5,6 +5,10 @@
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
+#include "feature.h"
+#include "../processor.h"
+
+Feature* create_auto_incudeguard();
 
 void replace_char_in_string(char find, char replace, char* string);
 char* create_headername(const char* filename);

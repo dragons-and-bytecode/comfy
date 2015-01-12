@@ -10,13 +10,24 @@
 
 List* features;
 
+/**
+ * Processes a given source file by following this order:
+ * 1. read the source file
+ * 2. for each feature
+ * 2.1.  process bundle in feature
+ * 3. if target_header content has been created:
+ * 3.1. delete possibly existing target header
+ * 3.2. write new target header
+ * 4. if target_c content has been created:
+ * 4.1. delete possibly existing target c file
+ * 4.2. write new target c file
+ */
 void foreach_single_bundle(List* list, Item item, int index){
     ComfyFileBundle* bundle = (ComfyFileBundle*) item;
     
     printf("%s changed ...\n", bundle->source.name);
     
-    //read source file
-    //delete target files
+    processor_load_content(&(bundle->source));
     
     while(true){
         bool modified = false;
@@ -32,6 +43,7 @@ void foreach_single_bundle(List* list, Item item, int index){
         if (!modified) break;
     }
     
+    //delete target files
     //write target content to file(s)
 }
 

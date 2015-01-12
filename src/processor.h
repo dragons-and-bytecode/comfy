@@ -4,6 +4,8 @@
 #include "base.h"
 #include "stdio.h"
 #include "list.h"
+#include "files.h"
+
 
 typedef struct {
     string name;
@@ -36,19 +38,9 @@ bool bundle_needs_processing(ComfyFileBundle* bundle);
 
 void processor_init();
 
-/**
- * Processes a given source file by following this order:
- * 1. read the source file
- * 2. for each feature
- * 2.1.  process bundle in feature
- * 3. if target_header content has been created:
- * 3.1. delete possibly existing target header
- * 3.2. write new target header
- * 4. if target_c content has been created:
- * 4.1. delete possibly existing target c file
- * 4.2. write new target c file
- */
-void processor_process(ComfyFileBundle* bundle);
+
+
+void processor_load_content(ComfyFile* file);
 
 
 #endif

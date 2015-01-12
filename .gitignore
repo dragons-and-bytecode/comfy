@@ -43,3 +43,7 @@ __pycache__/*
 
 _site/*
 
+# dependencies
+
+dependencies/lib/*
+dependencies/include/*

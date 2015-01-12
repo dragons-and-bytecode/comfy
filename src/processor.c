@@ -1,5 +1,5 @@
 #include "processor.h"
-#include "files.h"
+
 
 static FileListing source_files;
 static string target_dir;
@@ -122,8 +122,23 @@ void processor_init(string source_dir, string _target_dir){
     
     target_dir = _target_dir;
 }
-//bool processor_would_modify(ComfyFileBundle bundle){return false;}
 
-void processor_process(ComfyFileBundle* bundle){
+void processor_load_content(ComfyFile* file){
+    file->stream = fopen(file->name, "rb");
     
+    if (!file->stream){
+        printf("\x1b[31m" "[ERROR] Could not read file %s" "\x1b[0m" "\n",
+                file->name);
+        return;
+    }
+    
+    fseek(file->stream, 0, SEEK_END);
+    long fsize = ftell(file->stream);
+    fseek(file->stream, 0, SEEK_SET);
+
+    file->content = malloc(fsize + 1);
+    fread(file->content, fsize, 1, file->stream);
+    fclose(file->stream);
+
+    file->content[fsize] = '\0';
 }

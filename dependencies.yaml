@@ -1,0 +1,5 @@
+slre:
+    type: static library
+    package: c source
+    source: https://github.com/cesanta/slre.git
+    

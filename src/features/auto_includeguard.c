@@ -1,19 +1,37 @@
 #include "auto_includeguard.h"
+#include "../regex.h"
+
+static const string PATTERN_PRAGMA_ONCE = "^\\s*#pragma\\s+once\\s*\\n";
+static const string PATTERN_GUARD_START = "^\\s*#ifndef\\s+([a-zA-Z_]+)\\s*\\n"
+                                          "\\s*#define\\s+([a-zA-Z_]+)\\s*\\n";
+static const string PATTERN_GUARD_END =   "#endif\\s*$";
 
 bool _would_modify(ComfyFileBundle* bundle){
-    printf("Hahahaha\n");
+    if (!regex_match(".*\\.h$", bundle->source.name)){
+        return false;
+    }
+    
+
+    if (regex_match(PATTERN_PRAGMA_ONCE, bundle->source.content)){
+        printf("%s has #pragma once\n", bundle->source.name);
+        return false;
+    }
+    
+    RegexMatcher match_start = regex_matcher(PATTERN_GUARD_START, 
+                                             bundle->source.content);
+    
+    if (regex_did_match(match_start)){
+        if (0 == strcmp(regex_group(match_start, 0), 
+                        regex_group(match_start, 1))
+                && regex_match(PATTERN_GUARD_END, bundle->source.content)){
+            
+            regex_free_matcher(match_start);
+            return false;
+        }
+    }
+    
+    regex_free_matcher(match_start);
     return true;
-}
-
-void _process(ComfyFileBundle* bundle){
-    printf("Doing stuff!\n");
-}
-
-Feature* create_auto_incudeguard(){
-    Feature* f = malloc(sizeof(Feature));
-    f->would_modify = _would_modify;
-    f->process = _process;
-    return f;
 }
 
 void replace_char_in_string(char find, char replace, char* string){
@@ -70,4 +88,21 @@ void create_guard(const char* filename, FILE* input, FILE* output){
 
   free(headername);
   free(simplename);
+}
+
+void _process(ComfyFileBundle* bundle){
+    char* simplename = create_pure_filename(bundle->source.name);
+    char* headername = create_headername(simplename);
+    
+    
+    
+    free(headername);
+    free(simplename);
+}
+
+Feature* create_auto_incudeguard(){
+    Feature* f = malloc(sizeof(Feature));
+    f->would_modify = _would_modify;
+    f->process = _process;
+    return f;
 }

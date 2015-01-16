@@ -10,44 +10,45 @@
 
 List* features;
 
-/**
- * Processes a given source file by following this order:
- * 1. read the source file
- * 2. for each feature
- * 2.1.  process bundle in feature
- * 3. if target_header content has been created:
- * 3.1. delete possibly existing target header
- * 3.2. write new target header
- * 4. if target_c content has been created:
- * 4.1. delete possibly existing target c file
- * 4.2. write new target c file
- */
 void foreach_single_bundle(List* list, Item item, int index){
     ComfyFileBundle* bundle = (ComfyFileBundle*) item;
-    
     printf("%s changed ...\n", bundle->source.name);
     
     processor_load_content(&(bundle->source));
     
-    while(true){
-        bool modified = false;
+    List* targets = processor_create_targets(bundle);
+    
+    for(int i = 0; i < targets->count; i++){
+        ComfyFile* target = list_get(targets, i);
+        bool modified_at_all = false;
         
-        for (int i = 0; i < features->count; i++){
-            Feature* feature = list_get(features, i);
-            if (feature->would_modify(bundle)){
-                feature->process(bundle);
-                modified = true;
+        while(true){
+            bool modified = false;
+
+            for (int j = 0; j < features->count; j++){
+                Feature* feature = list_get(features, j);
+                if (feature->would_modify(target)){
+                    feature->process(target);
+                    modified = true;
+                    modified_at_all = true;
+                }
             }
+
+            if (!modified) break;
         }
         
-        if (!modified) break;
+        if (modified_at_all){
+            file_write_content(target->name, target->content);
+        }
     }
     
-    //delete target files
-    //write target content to file(s)
+    list_free(targets);
+    
+    //TODO delete target files
+    //TODO write target content to file(s)
 }
 
-void watch_dir(string source, string target, bool continuous)
+int watch_dir(string source, string target, bool continuous)
 {
     if (continuous)
         printf("Watching '%s' ... (exit with Ctrl-C)\n\n", source);
@@ -58,6 +59,7 @@ void watch_dir(string source, string target, bool continuous)
     
     while(true){
         List* bundles = create_bundles();
+        if (!bundles) return 1;
         
         list_foreach(bundles, foreach_single_bundle);
         
@@ -68,6 +70,8 @@ void watch_dir(string source, string target, bool continuous)
         //Opportunity to BREAK via SIGABR (Ctrl-C).
         usleep(1000L);
     }
+
+    return 0;
 }
 
 int main(int argc, char* argv[])
@@ -83,8 +87,9 @@ int main(int argc, char* argv[])
     
     features = create_feature_list();
 
-    watch_dir(source, target, opt.get_flag(&opt, "watch"));
+    int retval = watch_dir(source, target, opt.get_flag(&opt, "watch"));
     
     destroy_feature_list(features);
 
+    return retval;
 }

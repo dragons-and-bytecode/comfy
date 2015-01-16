@@ -1,4 +1,5 @@
 #include "processor.h"
+#include "assert.h"
 
 
 static FileListing source_files;
@@ -23,7 +24,18 @@ string _get_bundle_name(string source_file){
     return name;
 }
 
-void _bundle_set_target(ComfyFile* target, 
+void comfyfile_set_filetype(ComfyFile* file){
+    string tail = rindex(file->name, '.') + 1;
+    if (0 == strcmp("h", tail)){
+        file->type = FILETYPE_C_HEADER;
+    } else if (0 == strcmp("c", tail)){
+        file->type = FILETYPE_C_SOURCE;
+    } else if (0 == strcmp("comfy", tail)){
+        file->type = FILETYPE_COMFY;
+    }
+}
+
+void _bundle_set_target(ComfyFile* target,
                             FileMetadata* source_file,
                             string filetype){
     string name = _get_bundle_name(source_file->name);
@@ -69,7 +81,14 @@ bool _bundle_needs_processing(ComfyFileBundle* bundle){
 
 List* create_bundles(){
     List* files = files_list(&source_files);
+    if (NULL == files){
+        printf("\x1b[31m" "[ERROR] Could not read source directory %s" "\x1b[0m" "\n",
+               source_files.directory);
+        return NULL;
+    }
+
     List* bundles = list_new();
+
     
     //foreach file in files {...}
     for (int i = 0; i < files->count; i++){
@@ -81,8 +100,13 @@ List* create_bundles(){
         bundle->source.last_modified = file->last_update;
         bundle->source.exists = true;
 
+        comfyfile_set_filetype(&(bundle->source));
+
         _bundle_set_target(&(bundle->target_header), file, "h");        
         _bundle_set_target(&(bundle->target_c),      file, "c");
+
+        bundle->target_header.type = FILETYPE_C_HEADER;
+        bundle->target_c.type = FILETYPE_C_SOURCE;
         
         if (_bundle_needs_processing(bundle)){
             list_add(bundles, bundle);
@@ -141,4 +165,39 @@ void processor_load_content(ComfyFile* file){
     fclose(file->stream);
 
     file->content[fsize] = '\0';
+}
+
+void processor_copy_content(const ComfyFile* from, ComfyFile* to){
+    assert(from && to && from->content);
+    if (to->content){
+        free(to->content);
+        to->content = NULL;
+    }
+    
+    //to->content = malloc(strlen((from->content) + 1) * sizeof(char));
+    asprintf(&(to->content), "%s", from->content);
+}
+
+List* processor_create_targets(ComfyFileBundle* bundle){
+    List* targets = list_new();
+
+    switch (bundle->source.type) {
+        case FILETYPE_C_SOURCE:
+            processor_copy_content(
+                    &(bundle->source),
+                    &(bundle->target_c));
+            list_add(targets, &(bundle->target_c));
+            break;
+        case FILETYPE_C_HEADER:
+            processor_copy_content(
+                    &(bundle->source),
+                    &(bundle->target_header));
+            list_add(targets, &(bundle->target_header));
+            break;
+        case FILETYPE_COMFY:
+            //TODO create c and header from comfy source.
+            break;
+    }
+
+    return targets;
 }

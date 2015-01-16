@@ -6,9 +6,15 @@
 #include "list.h"
 #include "files.h"
 
+typedef enum {
+    FILETYPE_C_SOURCE,
+    FILETYPE_C_HEADER,
+    FILETYPE_COMFY
+} ComfyFileType;
 
 typedef struct {
     string name;
+    ComfyFileType type;
     FILE* stream;
     timestamp last_modified;
     bool exists;
@@ -38,9 +44,10 @@ bool bundle_needs_processing(ComfyFileBundle* bundle);
 
 void processor_init();
 
-
+void processor_copy_content(const ComfyFile* from, ComfyFile* to);
 
 void processor_load_content(ComfyFile* file);
 
+List* processor_create_targets(ComfyFileBundle* bundle);
 
 #endif

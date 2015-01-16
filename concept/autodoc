@@ -1,0 +1,38 @@
+#!/bin/bash
+
+regex_include='#include[[:space:]]+"(.+)\.(.+)"'
+
+script_dir=`dirname $BASH_SOURCE`
+source_dir="$script_dir/../src"
+
+names=""
+
+function read_dir {
+    local dir=$1
+    for file in `ls -1 $dir`; do
+        path="$dir/$file"
+        
+        if [ -d $path ]; then
+            read_dir $path
+        else
+            name=`echo $file | sed 's!\..*$!!'`
+            if [[ "$names" != *"|$name|"* ]]; then
+                names="$names |$name|"
+                echo "[$name]"
+            fi
+            while read line; do
+                if [[ "$line" =~ $regex_include ]]; then
+                    n="${BASH_REMATCH[1]}"
+                    t="${BASH_REMATCH[2]}"
+                    #echo "-$n-"
+                    if [[  "$name" != "$n" ]]; then
+                        echo "[$name]->[$n]"
+                    fi
+                fi
+            done <$path
+                
+        fi
+    done
+}
+
+read_dir $source_dir

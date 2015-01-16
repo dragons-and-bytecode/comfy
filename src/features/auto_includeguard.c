@@ -6,24 +6,24 @@ static const string PATTERN_GUARD_START = "^\\s*#ifndef\\s+([a-zA-Z_]+)\\s*\\n"
                                           "\\s*#define\\s+([a-zA-Z_]+)\\s*\\n";
 static const string PATTERN_GUARD_END =   "#endif\\s*$";
 
-bool _would_modify(ComfyFileBundle* bundle){
-    if (!regex_match(".*\\.h$", bundle->source.name)){
+bool _would_modify(const ComfyFile* file){
+    if (!regex_match(".*\\.h$", file->name)){
         return false;
     }
     
 
-    if (regex_match(PATTERN_PRAGMA_ONCE, bundle->source.content)){
-        printf("%s has #pragma once\n", bundle->source.name);
+    if (regex_match(PATTERN_PRAGMA_ONCE, file->content)){
+        //printf("%s has #pragma once\n", file->name);
         return false;
     }
     
-    RegexMatcher match_start = regex_matcher(PATTERN_GUARD_START, 
-                                             bundle->source.content);
+    RegexMatcher match_start =
+            regex_matcher(PATTERN_GUARD_START, file->content);
     
     if (regex_did_match(match_start)){
         if (0 == strcmp(regex_group(match_start, 0), 
                         regex_group(match_start, 1))
-                && regex_match(PATTERN_GUARD_END, bundle->source.content)){
+                && regex_match(PATTERN_GUARD_END, file->content)){
             
             regex_free_matcher(match_start);
             return false;
@@ -70,31 +70,18 @@ char* create_pure_filename(const char* filename){
   }
 }
 
-void create_guard(const char* filename, FILE* input, FILE* output){
-
-  char* simplename = create_pure_filename(filename);
-  char* headername = create_headername(simplename);
-
-  fprintf(output, "#ifndef %s\n#define %s\n\n", headername, headername);
-
-  while (!feof(input)){
-    char c = fgetc(input);
-    if (EOF != c)
-      fputc(c, output);
-  }
-
-
-  fprintf(output, "\n\n#endif\n");
-
-  free(headername);
-  free(simplename);
-}
-
-void _process(ComfyFileBundle* bundle){
-    char* simplename = create_pure_filename(bundle->source.name);
+void _process(ComfyFile* file){
+    char* simplename = create_pure_filename(file->name);
     char* headername = create_headername(simplename);
     
+    string new_content;
+    asprintf(&new_content, "#ifndef %s\n#define %s\n\n%s\n\n#endif\n",
+                headername,
+                headername,
+                file->content);
     
+    free(file->content);
+    file->content = new_content;
     
     free(headername);
     free(simplename);

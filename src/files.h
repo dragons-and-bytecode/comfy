@@ -44,4 +44,6 @@ void          files_add_filter (FileListing* this, const string filter);
  */
 List* files_list(const FileListing* this);
 
+void file_write_content(const string filename, const string content);
+
 #endif

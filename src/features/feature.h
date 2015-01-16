@@ -5,8 +5,8 @@
 #include "../processor.h"
 
 typedef struct Feature {
-    bool (*would_modify)(ComfyFileBundle* bundle);
-    void (*process)(ComfyFileBundle* bundle);
+    bool (*would_modify)(const ComfyFile* bundle);
+    void (*process)(ComfyFile* bundle);
 } Feature;
 
 #endif

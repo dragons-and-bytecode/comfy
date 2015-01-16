@@ -5,6 +5,7 @@
 #include "sys/stat.h"
 #include "list.h"
 #include "fnmatch.h"
+#include "stdio.h"
 
 void print_file(const string filename){
   printf("%s", filename);
@@ -115,4 +116,13 @@ List* __files_list(const FileListing* this, string path){
 List* files_list(const FileListing* this)
 {
     return __files_list(this, this->directory);
+}
+
+void file_write_content(const string filename, const string content){
+    assert(filename && content);
+    FILE* file = fopen(filename, "w");
+    if (file){
+        fputs(content, file);
+        fclose(file);
+    }
 }

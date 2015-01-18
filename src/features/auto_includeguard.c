@@ -75,7 +75,7 @@ void _process(ComfyFile* file){
     char* headername = create_headername(simplename);
     
     string new_content;
-    asprintf(&new_content, "#ifndef %s\n#define %s\n\n%s\n\n#endif\n",
+    asprintf(&new_content, "#ifndef %s\n#define %s\n\n%s\n#endif\n",
                 headername,
                 headername,
                 file->content);

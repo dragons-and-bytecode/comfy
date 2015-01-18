@@ -118,6 +118,11 @@ List* files_list(const FileListing* this)
     return __files_list(this, this->directory);
 }
 
+bool file_exists(string filename){
+    struct stat stats;
+    return 0 == stat(filename, &stats);
+}
+
 void file_write_content(const string filename, const string content){
     assert(filename && content);
     FILE* file = fopen(filename, "w");

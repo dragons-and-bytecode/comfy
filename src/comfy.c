@@ -7,6 +7,7 @@
 #include "list.h"
 #include "unistd.h"
 #include "features.h"
+#include "files.h"
 
 List* features;
 
@@ -37,7 +38,7 @@ void foreach_single_bundle(List* list, Item item, int index){
             if (!modified) break;
         }
         
-        if (modified_at_all){
+        if (modified_at_all || !file_exists(target->name)){
             file_write_content(target->name, target->content);
         }
     }

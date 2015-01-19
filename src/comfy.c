@@ -23,19 +23,8 @@ void foreach_single_bundle(List* list, Item item, int index){
         ComfyFile* target = list_get(targets, i);
         bool modified_at_all = false;
         
-        while(true){
-            bool modified = false;
-
-            for (int j = 0; j < features->count; j++){
-                Feature* feature = list_get(features, j);
-                if (feature->would_modify(target)){
-                    feature->process(target);
-                    modified = true;
-                    modified_at_all = true;
-                }
-            }
-
-            if (!modified) break;
+        while(processor_process_file(target, features)){
+            modified_at_all = true;
         }
         
         if (modified_at_all || !file_exists(target->name)){

@@ -50,4 +50,6 @@ void processor_load_content(ComfyFile* file);
 
 List* processor_create_targets(ComfyFileBundle* bundle);
 
+bool processor_process_file(ComfyFile* target, List* features);
+
 #endif

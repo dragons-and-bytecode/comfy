@@ -1,6 +1,6 @@
 #include "processor.h"
 #include "assert.h"
-
+#include "features/feature.h"
 
 static FileListing source_files;
 static string target_dir;
@@ -200,4 +200,18 @@ List* processor_create_targets(ComfyFileBundle* bundle){
     }
 
     return targets;
+}
+
+bool processor_process_file(ComfyFile* target, List* features){
+    bool modified = false;
+
+    for (int j = 0; j < features->count; j++){
+        Feature* feature = list_get(features, j);
+        if (feature->would_modify(target)){
+            feature->process(target);
+            modified = true;
+        }
+    }
+    
+    return modified;
 }

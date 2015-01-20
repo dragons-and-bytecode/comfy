@@ -39,11 +39,11 @@ int _count_char(const string pattern, char c){
     return count;
 }
 
-int min(int x, int y){
+int fmin(int x, int y){
     return x < y ? x : y;
 }
 
-int max(int x, int y){
+int fmax(int x, int y){
     return x > y ? x : y;
 }
 
@@ -51,8 +51,8 @@ int _count_groups(const string pattern){
     int count_open = _count_char(pattern, '(');
     int count_close = _count_char(pattern, ')');
     
-    int max = max(count_open, count_close);
-    int min = min(count_open, count_close);
+    int max = fmax(count_open, count_close);
+    int min = fmin(count_open, count_close);
     
     return max - ( max - min);
 }

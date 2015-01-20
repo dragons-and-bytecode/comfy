@@ -1,0 +1,5 @@
+language: c
+compiler: clang
+install: make dependencies
+script: make && make test
+

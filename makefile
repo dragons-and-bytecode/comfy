@@ -1,6 +1,6 @@
 CLANG_ARGS = -g
 DEPEND_DIRS = -I ./dependencies/include -L ./dependencies/lib
-DEPEND_ARGS = $(DEPEND_DIRS) -lslre
+DEPEND_ARGS = $(DEPEND_DIRS) -lslre -lasprintf
 
 comfy: setup
 	clang $(CLANG_ARGS) $(DEPEND_ARGS) src/*.c src/features/*.c -o build/comfy
@@ -35,7 +35,7 @@ clean:
 	rm -rf build
 	rm -rf _site
 	
-dependencies: slre
+dependencies: slre asprintf
 
 asprintf: dep_setup
 	clang -c $(CLANG_ARGS) dependencies/asprintf/asprintf.c -o dependencies/asprintf/asprintf.o

@@ -6,6 +6,7 @@
 #include "list.h"
 #include "fnmatch.h"
 #include "stdio.h"
+#include "asprintf.h"
 
 void print_file(const string filename){
   printf("%s", filename);
@@ -26,7 +27,7 @@ void files_add_filter (FileListing* this, const string filter)
 {
     int size = this->filters_size + 1;
     
-    realloc(this->filters, sizeof(string) * size);
+    this->filters = realloc(this->filters, sizeof(string) * size);
     this->filters[this->filters_size] = filter;
     this->filters_size = size;
     

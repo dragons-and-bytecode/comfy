@@ -1,5 +1,6 @@
 #include "auto_includeguard.h"
 #include "../regex.h"
+#include "asprintf.h"
 
 static const string PATTERN_PRAGMA_ONCE = "^\\s*#pragma\\s+once\\s*\\n";
 static const string PATTERN_GUARD_START = "^\\s*#ifndef\\s+([a-zA-Z_]+)\\s*\\n"

@@ -1,6 +1,7 @@
 #include "processor.h"
 #include "assert.h"
 #include "features/feature.h"
+#include "asprintf.h"
 
 static FileListing source_files;
 static string target_dir;

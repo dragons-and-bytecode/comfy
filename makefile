@@ -37,10 +37,19 @@ clean:
 	
 dependencies: slre
 
-slre:
-	@mkdir -p dependencies/lib
-	@mkdir -p dependencies/include
+asprintf: dep_setup
+	clang -c $(CLANG_ARGS) dependencies/asprintf/asprintf.c -o dependencies/asprintf/asprintf.o
+	ar rs dependencies/lib/libasprintf.a dependencies/asprintf/*.o
+	@rm dependencies/asprintf/*.o
+	cp -rf dependencies/asprintf/*.h dependencies/include
+
+slre: dep_setup
 	clang -c $(CLANG_ARGS) dependencies/slre/slre.c -o dependencies/slre/slre.o
 	ar rs dependencies/lib/libslre.a dependencies/slre/*.o
 	@rm dependencies/slre/*.o
 	cp -rf dependencies/slre/*.h dependencies/include
+
+dep_setup:
+	@mkdir -p dependencies/lib
+	@mkdir -p dependencies/include
+

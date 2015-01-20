@@ -3,7 +3,7 @@ DEPEND_DIRS = -I ./dependencies/include -L ./dependencies/lib
 DEPEND_ARGS = $(DEPEND_DIRS) -lslre -lasprintf
 
 comfy: setup
-	clang $(CLANG_ARGS) $(DEPEND_ARGS) src/*.c src/features/*.c -o build/comfy
+	clang $(CLANG_ARGS) $(DEPEND_ARGS) -v src/*.c src/features/*.c -o build/comfy
 	
 setup:
 	mkdir -p build

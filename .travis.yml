@@ -1,5 +1,8 @@
 language: c
 compiler: clang
-install: make dependencies
+install: 
+    - make dependencies
+    - ls -l ./dependencies/lib
+    - ls -l ./dependencies/include
 script: make && make test
 

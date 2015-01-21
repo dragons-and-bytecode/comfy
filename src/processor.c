@@ -172,50 +172,32 @@ void processor_load_content(ComfyFile* file){
 
 void processor_copy_content(const ComfyFile* from, ComfyFile* to){
     assert(from && to && from->content);
-    DEBUG("processor_copy_content(%s, %s){", from->name, to->name);
+    assert(!(to->content));
     
-    if (to->content){
-    DEBUG("    * freeing content of target file %s", "");
-        free(to->content);
-        to->content = NULL;
-    }
-    
-    //to->content = malloc(strlen((from->content) + 1) * sizeof(char));
-    DEBUG("    * asprintf all the stuff", "");
     asprintf(&(to->content), "%s", from->content);
-    DEBUG("}%s", "");
 }
 
 List* processor_create_targets(ComfyFileBundle* bundle){
-    DEBUG("processor_create_targets:::%s", "");
     List* targets = list_new();
-    DEBUG("    * new list created (%p).", targets);
 
-    DEBUG("    * switching over source types (%i)", bundle->source.type);
     switch (bundle->source.type) {
         case FILETYPE_C_SOURCE:
-    DEBUG("      -> %s", "FILETYPE_C_SOURCE");
             processor_copy_content(
                     &(bundle->source),
                     &(bundle->target_c));
-    DEBUG("         source copied as %s", "target_c");
             list_add(targets, &(bundle->target_c));
             break;
         case FILETYPE_C_HEADER:
-    DEBUG("      -> %s", "FILETYPE_C_HEADER");
             processor_copy_content(
                     &(bundle->source),
                     &(bundle->target_header));
-    DEBUG("         source copied as %s", "target_header");
             list_add(targets, &(bundle->target_header));
             break;
         case FILETYPE_COMFY:
-    DEBUG("      -> %s", "FILETYPE_COMFY");
             //TODO create c and header from comfy source.
             break;
     }
 
-    DEBUG(":::processor_create_targets -- %i targets created.", list_length(targets));
     return targets;
 }
 

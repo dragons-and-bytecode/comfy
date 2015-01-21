@@ -20,8 +20,6 @@ void foreach_single_bundle(List* list, Item item, int index){
     
     List* targets = processor_create_targets(bundle);
     
-    DEBUG("%i targets created from %s", list_length(targets), bundle->source.name);
-    
     for(int i = 0; i < list_length(targets); i++){
         ComfyFile* target = list_get(targets, i);
         
@@ -31,8 +29,6 @@ void foreach_single_bundle(List* list, Item item, int index){
             modified_at_all = true;
         }
         
-        
-        
         if (modified_at_all || !file_exists(target->name)){
             file_write_content(target->name, target->content);
             
@@ -40,10 +36,6 @@ void foreach_single_bundle(List* list, Item item, int index){
     }
     
     list_free(targets);
-    DEBUG("all done for %s\n\n", bundle->source.name);
-    
-    //TODO delete target files
-    //TODO write target content to file(s)
 }
 
 int watch_dir(string source, string target, bool continuous)
@@ -75,10 +67,6 @@ int watch_dir(string source, string target, bool continuous)
 int main(int argc, char* argv[])
 {
     Options opt = parse_args(argc, argv);
-    
-    //FILE* input = fopen(argv[1], "r");
-    //create_guard(argv[1], input, stdout);
-    //fclose(input);
     
     string source = opt.get(&opt, "source", ".");
     string target = opt.get(&opt, "target", ".");

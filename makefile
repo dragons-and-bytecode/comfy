@@ -1,9 +1,9 @@
 # all, test, dependencies, clean
 
 CFLAGS+=-g
-CFLAGS+=-I dependencies/include
+CFLAGS+=-Idependencies/include
 
-LDFLAGS+=-L dependencies/lib 
+LDFLAGS+=-Ldependencies/lib 
 LDLIBS+=-lasprintf -lslre
 
 #DEPEND_DIRS = -I ./dependencies/include -L ./dependencies/lib

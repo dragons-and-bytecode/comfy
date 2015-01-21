@@ -47,6 +47,7 @@ void _bundle_set_target(ComfyFile* target,
     FileMetadata* meta = files_file_metadata(target->name);
     target->exists = meta->exists;
     target->last_modified = target->exists ? meta->last_update : 0;
+    target->content = NULL;
     
     free(sub_path);
     free(name);
@@ -100,6 +101,7 @@ List* create_bundles(){
         asprintf(&(bundle->source.name), "%s", file->path);
         bundle->source.last_modified = file->last_update;
         bundle->source.exists = true;
+        bundle->source.content = NULL;
 
         comfyfile_set_filetype(&(bundle->source));
 

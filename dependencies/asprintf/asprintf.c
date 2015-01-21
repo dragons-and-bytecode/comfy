@@ -15,6 +15,7 @@
 
 int
 asprintf (char **str, const char *fmt, ...) {
+printf("++++ asprintf(%s) ++++\n", fmt);
   int size = 0;
   va_list args;
 
@@ -27,11 +28,13 @@ asprintf (char **str, const char *fmt, ...) {
   // toss args
   va_end(args);
 
+printf("---- asprintf(%s) ----\n", fmt);
   return size;
 }
 
 int
 vasprintf (char **str, const char *fmt, va_list args) {
+    printf("++++ vasprintf(%s) ++++\n", fmt);
   int size = 0;
   va_list tmpa;
 
@@ -40,7 +43,9 @@ vasprintf (char **str, const char *fmt, va_list args) {
 
   // apply variadic arguments to
   // sprintf with format to get size
+  printf("  Guessing size....\n");
   size = vsnprintf(NULL, size, fmt, tmpa);
+  printf("    Buest guess is %i\n", size);
 
   // toss args
   va_end(tmpa);
@@ -50,7 +55,9 @@ vasprintf (char **str, const char *fmt, va_list args) {
   if (size < 0) { return -1; }
 
   // alloc with size plus 1 for `\0'
+  printf("  Allocating space\n");
   *str = (char *) malloc(size + 1);
+  printf("    ... found some.\n");
 
   // return -1 to be compliant
   // if pointer is `NULL'
@@ -58,7 +65,10 @@ vasprintf (char **str, const char *fmt, va_list args) {
 
   // format string with original
   // variadic arguments and set new size
+  printf("  Filling string with stuff...\n");
   size = vsprintf(*str, fmt, args);
+  printf("    ...ok.\n");
+  printf("---- vasprintf(%s) ----\n", fmt);
   return size;
 }
 

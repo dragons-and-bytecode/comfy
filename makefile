@@ -9,29 +9,39 @@ LDLIBS+=-lasprintf -lslre
 #DEPEND_DIRS = -I ./dependencies/include -L ./dependencies/lib
 #DEPEND_ARGS = $(DEPEND_DIRS) -lslre -lasprintf
 
-all_objs=$(patsubst %.c,%.o,$(wildcard src/*.c)) 
-all_objs+=$(patsubst %.c,%.o,$(wildcard src/features/*.c))
+all_src=$(wildcard src/*.c)
+all_src+=$(wildcard src/features/*.c)
 
-.PHONY: dependencies clean test
+all_objs=$(patsubst src/%,build/o/%,$(patsubst %.c,%.o,$(all_src)))
+
+.PHONY: dependencies clean test setup
 
 comfy: $(all_objs)
-	$(LINK.o) $^ $(LDFLAGS) $(LDLIBS) -o $@
+	$(LINK.o) $^ $(LDFLAGS) $(LDLIBS) -o build/$@
+
+build/o/%.o: src/%.c | setup
+	$(CC) -c $(CFLAGS) -o $@ $?
+	
+setup:
+	@mkdir -p build/o/features
 	
 test: comfy filetests/comfy_test
 	@$(RM) -r filetests/target
 	@mkdir -p filetests/target
 	@echo ""
 	@echo ""
-	@./comfy --source ./filetests/source --target ./filetests/target
+	@./build/comfy --source ./filetests/source --target ./filetests/target
 	@echo ""
 	@echo ""
 	@./filetests/comfy_test ./filetests/source ./filetests/target ./filetests/expected
 
 clean:
-	$(RM) $(all_objs)
-	$(RM) comfy
+	$(RM) -r build
 	$(RM) filetests/comfy_test
+	$(RM) -r filetests/target
 	$(RM) -r **/*.dSYM
+
+cleanDependencies:
 	$(MAKE) -C dependencies clean
 
 dependencies:

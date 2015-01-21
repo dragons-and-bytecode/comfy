@@ -13,6 +13,8 @@ typedef int bool;
 #define false 0
 #endif
 
+#define DEBUG(txt, ...) printf("\x1b[36m" "[DEBUG] " txt "\n" "\x1b[0m", __VA_ARGS__)
+
 /*
  * String functions
  */

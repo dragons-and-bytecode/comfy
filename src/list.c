@@ -49,6 +49,11 @@ Item list_get(List* list, int i){
     return list->items[i];
 }
 
+int list_length(List* list){
+    assert(list);
+    return list->count;
+}
+
 /*
 // Sample usage
 

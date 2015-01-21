@@ -2,6 +2,7 @@
  *@file comfy the main program
  *
  */
+#include "base.h"
 #include "processor.h"
 #include "args.h"
 #include "list.h"
@@ -17,22 +18,37 @@ void foreach_single_bundle(List* list, Item item, int index){
     
     processor_load_content(&(bundle->source));
     
+    DEBUG("Bundle %s loaded.", bundle->source.name);
+    
     List* targets = processor_create_targets(bundle);
     
-    for(int i = 0; i < targets->count; i++){
+    DEBUG("%i targets created from %s", list_length(targets), bundle->source.name);
+    
+    for(int i = 0; i < list_length(targets); i++){
         ComfyFile* target = list_get(targets, i);
+        
+        DEBUG("for target: %s", target->name);
+        
         bool modified_at_all = false;
         
         while(processor_process_file(target, features)){
+            DEBUG("  * target (%s) processed.", target->name);
             modified_at_all = true;
         }
         
+        
+        
         if (modified_at_all || !file_exists(target->name)){
+            DEBUG("  ---- writing file%s", "...");
             file_write_content(target->name, target->content);
+            
         }
+        DEBUG("  ---- done. %s", "");
     }
     
+    DEBUG("Attempting cleanup of %i targets", list_length(targets));
     list_free(targets);
+    DEBUG("all done for %s\n\n", bundle->source.name);
     
     //TODO delete target files
     //TODO write target content to file(s)

@@ -8,6 +8,9 @@
 *.gch
 *.pch
 
+# Debug Data
+**.dSYM*
+
 # Libraries
 *.lib
 *.a

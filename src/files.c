@@ -7,6 +7,7 @@
 #include "fnmatch.h"
 #include "stdio.h"
 #include "asprintf.h"
+#include "unistd.h"
 
 void print_file(const string filename){
   printf("%s", filename);
@@ -119,13 +120,18 @@ List* files_list(const FileListing* this)
     return __files_list(this, this->directory);
 }
 
-bool file_exists(string filename){
+bool file_exists(const string filename){
     struct stat stats;
     return 0 == stat(filename, &stats);
 }
 
 void file_write_content(const string filename, const string content){
     assert(filename && content);
+    
+    if (file_exists(filename)){
+        unlink(filename);
+    }
+    
     FILE* file = fopen(filename, "w");
     if (file){
         fputs(content, file);

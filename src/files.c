@@ -4,7 +4,7 @@
 #include "string.h"
 #include "sys/stat.h"
 #include "list.h"
-#include "fnmatch.h"
+#include "regex.h"
 #include "stdio.h"
 #include "asprintf.h"
 #include "unistd.h"
@@ -43,7 +43,7 @@ bool files_filter_file(const FileListing* this, const string filename){
             negate = true;
         }
         
-        if(0 == fnmatch(filter, filename, 0)){
+        if(regex_match(filter, filename)){
             return negate ? false : true;
         }
     }
@@ -58,7 +58,7 @@ FileMetadata* files_file_metadata(const string filename){
     asprintf(&path, "%s", filename);
     
     FileMetadata* f_data = malloc(sizeof(FileMetadata));
-    f_data->name = rindex(path, '/')+1;
+    f_data->name = strrchr(path, '/')+1;
     f_data->path = path;
     f_data->last_update = stats.st_mtime;
     

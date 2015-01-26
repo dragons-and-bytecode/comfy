@@ -17,7 +17,7 @@ string _get_intermediate_path(FileMetadata* file){
 }
 
 string _get_bundle_name(string source_file){
-    string tail = rindex(source_file, '.') + 1;
+    string tail = strrchr(source_file, '.') + 1;
     int name_len = strlen(source_file) - strlen(tail) - 1;
     string name = malloc((1 + name_len) * sizeof(char));
     strncpy(name, source_file, name_len);
@@ -26,7 +26,7 @@ string _get_bundle_name(string source_file){
 }
 
 void comfyfile_set_filetype(ComfyFile* file){
-    string tail = rindex(file->name, '.') + 1;
+    string tail = strrchr(file->name, '.') + 1;
     if (0 == strcmp("h", tail)){
         file->type = FILETYPE_C_HEADER;
     } else if (0 == strcmp("c", tail)){
@@ -143,9 +143,8 @@ bool bundle_needs_processing(ComfyFileBundle* bundle){return false;}
 
 void processor_init(string source_dir, string _target_dir){
     source_files = files_in(source_dir);
-    files_add_filter(&source_files, "!.*");
-    files_add_filter(&source_files, "*.comfy");
-    files_add_filter(&source_files, "*.h");
+    files_add_filter(&source_files, ".*\\.comfy$");
+    files_add_filter(&source_files, ".*\\.h$");
     
     target_dir = _target_dir;
 }

@@ -1,140 +1,52 @@
 #include "files.h"
+
 #include "dirent.h"
-#include "assert.h"
-#include "string.h"
-#include "sys/stat.h"
-#include "list.h"
-#include "regex.h"
 #include "stdio.h"
-#include "asprintf.h"
-#include "unistd.h"
+#include "list.h"
+#include "stdlib.h"
 
-void print_file(const string filename){
-  printf("%s", filename);
-}
+struct _Files {
+    List* dir_entries;
+};
 
-FileListing files_in(const string directory){
-  assert(NULL != directory);
-  FileListing this = {
-      .directory = directory,
-      .filters = malloc(sizeof(string))
-  };
-  this.filters[0] = NULL;
-  this.filters_size = 0;
-  return this;
-}
-
-void files_add_filter (FileListing* this, const string filter)
-{
-    int size = this->filters_size + 1;
+Files* files_list_dir(string dirname){
+    Files* files = malloc(sizeof(Files));
+    files->dir_entries = list_new();
     
-    this->filters = realloc(this->filters, sizeof(string) * size);
-    this->filters[this->filters_size] = filter;
-    this->filters_size = size;
-    
-}
-
-bool files_filter_file(const FileListing* this, const string filename){
-    for (int i = 0; i < this->filters_size; i++){
-        string filter = this->filters[i];
-        bool negate = false;
-        if (0 == strncmp("!", filter, 1)){
-            filter++;
-            negate = true;
+    DIR* d = opendir(dirname);
+    if (d){
+        struct dirent* dir_entry;
+        while ((dir_entry = readdir(d))){
+            list_add(files->dir_entries, dir_entry);
         }
-        
-        if(regex_match(filter, filename)){
-            return negate ? false : true;
+        closedir(d);
+    }
+    
+    return files;
+}
+
+void files_free_files(Files* files){
+    if (files){
+        if (files->dir_entries){
+            list_free(files->dir_entries);
+            files->dir_entries = NULL;
         }
-    }
-    return false;
-}
-
-FileMetadata* files_file_metadata(const string filename){
-    struct stat stats;
-    int statval = stat(filename, &stats);
-    
-    string path;
-    asprintf(&path, "%s", filename);
-    
-    FileMetadata* f_data = malloc(sizeof(FileMetadata));
-    f_data->name = strrchr(path, '/')+1;
-    f_data->path = path;
-    f_data->last_update = stats.st_mtime;
-    
-    f_data->exists = (0 == statval); 
-    
-    return f_data;
-}
-
-void files_delete_file_metadata(FileMetadata* file){
-    if (file){
-        if (file->path){
-            free(file->path);
-        }
-        free(file);
+        free(files);
     }
 }
 
-List* __files_list(const FileListing* this, string path){
-    DIR* d;
-    d = opendir(path);
-    if (!d)
-        return NULL;
-    
-    struct dirent *dir;
-    
-    List* list = list_new();
-    
-    while ((dir = readdir(d)) != NULL) {
-        if (0 == strcmp(".", dir->d_name) || 0 == strcmp("..", dir->d_name))
-            continue;
-        
-        string inner_path; 
-        asprintf(&inner_path, "%s/%s", path, dir->d_name);
-        
-        List* inner_list = __files_list(this, inner_path);
-        
-        if (inner_list){
-            list_addall(list, inner_list);
-            list_free(inner_list);
-            
-        } else if (files_filter_file(this, dir->d_name)){
-            
-            
-            struct stat stats;
-            stat(inner_path, &stats);
-            list_add(list, files_file_metadata(inner_path));
-        } 
-        
-        free(inner_path);
-        
-    }
-    
-    closedir(d);
-    return list;
+int files_count(Files* files){
+    return list_size(files->dir_entries);
 }
 
-List* files_list(const FileListing* this)
-{
-    return __files_list(this, this->directory);
+struct dirent* _files_entry(Files* files, int index){
+    return list_get(files->dir_entries, index);
 }
 
-bool file_exists(const string filename){
-    struct stat stats;
-    return 0 == stat(filename, &stats);
+string files_filename(Files* files, int index){
+    return _files_entry(files, index)->d_name;  
 }
 
-void file_write_content(const string filename, const string content){
-    assert(filename && content);
-    
-    if (file_exists(filename)){
-        unlink(filename);
-    }
-    
-    FILE* file = fopen(filename, "w");
-    if (file){
-        fputs(content, file);
-        fclose(file);
-    }
+bool files_type_is_regular_file(Files* files, int index){
+    return DT_REG == _files_entry(files, index)->d_type;
 }

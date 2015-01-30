@@ -3,79 +3,31 @@
  *
  */
 #include "base.h"
-#include "processor.h"
 #include "args.h"
-#include "list.h"
-#include "unistd.h"
-#include "features.h"
 #include "files.h"
 
-List* features;
+#include "stdio.h"
 
-void foreach_single_bundle(List* list, Item item, int index){
-    ComfyFileBundle* bundle = (ComfyFileBundle*) item;
-    printf("%s changed ...\n", bundle->source.name);
-    
-    processor_load_content(&(bundle->source));
-    
-    List* targets = processor_create_targets(bundle);
-    
-    for(int i = 0; i < list_length(targets); i++){
-        ComfyFile* target = list_get(targets, i);
-        
-        bool modified_at_all = false;
-        
-        while(processor_process_file(target, features)){
-            modified_at_all = true;
-        }
-        
-        if (modified_at_all || !file_exists(target->name)){
-            file_write_content(target->name, target->content);
-            
-        }
-    }
-    
-    list_free(targets);
-}
-
-int watch_dir(string source, string target, bool continuous)
-{
-    if (continuous)
-        printf("Watching '%s' ... (exit with Ctrl-C)\n\n", source);
-    else
-        printf("Compiling from '%s' into '%s'\n", source, target);
-    
-    processor_init(source, target);
-    
-    while(true){
-        List* bundles = create_bundles();
-        if (!bundles) return 1;
-        
-        list_foreach(bundles, foreach_single_bundle);
-        
-        delete_bundles(bundles);
-        
-        if (!continuous)
-            break;
-        //Opportunity to BREAK via SIGABR (Ctrl-C).
-        usleep(1000L);
-    }
-
-    return 0;
-}
-
+/**
+ * 1. 
+ */
 int main(int argc, char* argv[])
 {
     Options opt = parse_args(argc, argv);
     
     string source = opt.get(&opt, "source", ".");
     string target = opt.get(&opt, "target", ".");
-    
-    features = create_feature_list();
 
-    int retval = watch_dir(source, target, opt.get_flag(&opt, "watch"));
+    Files* source_files = files_list_dir(source);
     
-    destroy_feature_list(features);
+    for (int i = 0; i < files_count(source_files); i++){
+        if (!files_type_is_regular_file(source_files, i))
+            continue;
+        
+        printf("* %s\n", files_filename(source_files, i));
+    }
+    
+    files_free_files(source_files);
 
-    return retval;
+    return 0;
 }

@@ -6,27 +6,8 @@ List* list_new(){
     List* list = malloc(sizeof(List));
     list->items = NULL;
     list->count = 0;
+    list->memsize = 0;
     return list;
-}
-
-void list_add(List* list, Item element){
-    int count = list->count + 1;
-    list->items = realloc(list->items, count * sizeof(element));
-    list->items[list->count] = element;
-    list->count = count;
-}
-
-void list_addall(List* list, List* other){
-    assert(list);
-    assert(other);
-    if (other->count == 0) return;
-    
-    int count = list->count + other->count;
-    list->items = realloc(list->items, count * sizeof(*(other->items)));
-    for(int i = 0; i < other->count; i++){
-        list->items[list->count + i] = other->items[i];
-    }
-    list->count = count;
 }
 
 void list_free(List* list){
@@ -36,57 +17,28 @@ void list_free(List* list){
     }
 }
 
-void list_foreach(List* list, void (*callback)(List*, Item, int)){
-    if (!list) return;
-    
-    for (int i = 0; i < list->count; i++){
-        callback(list, list->items[i], i);
+void list_add(List* list, ListItem element){
+    int count = list->count + 1;
+    if (list->memsize < count){
+        if (0 == list->memsize){
+            list->memsize = 1;
+        } else {
+            list->memsize = list->memsize * 2;
+        }
+        list->items = realloc(list->items, list->memsize * sizeof(ListItem));
     }
+    
+    
+    list->items[list->count] = element;
+    list->count = count;
 }
 
-Item list_get(List* list, int i){
+ListItem list_get(List* list, int i){
     assert(i < list->count);
     return list->items[i];
 }
 
-int list_length(List* list){
+int list_size(List* list){
     assert(list);
     return list->count;
 }
-
-/*
-// Sample usage
-
-#include "stdio.h"
-
-void debug_item(List* list, Item item, int index){
-    if(index > 0) printf(", ");
-    printf("\"%s\"", item);
-}
-
-void debug(List* list){
-    printf("%i : [", list->count);
-    list_foreach(list, debug_item);
-    printf("]\n");
-}
-
-int main(){
-    List* cats = list_new();
-    debug(cats);
-    list_add(cats, "Baltazar");
-    list_add(cats, "Scar");
-    list_add(cats, "Garfield");
-    debug(cats);
-    
-    List* dogs = list_new();
-    list_add(dogs, "Goofy");
-    list_add(dogs, "Pluto");
-    debug(dogs);
-    
-    list_addall(cats, dogs);
-    debug(cats);
-    
-    list_free(dogs);
-    list_free(cats);
-}
-*/

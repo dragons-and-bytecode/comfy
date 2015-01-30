@@ -1,21 +1,21 @@
 #ifndef __list_h__
 #define __list_h__
 
-typedef void* Item;
+typedef void* ListItem;
 
 typedef struct {
-    Item* items;
+    ListItem* items;
     int count;
+    int memsize;
 } List;
 
 
 List* list_new();
-int list_length(List* list);
-void list_add(List* list, Item element);
-void list_addall(List* list, List* other);
 void list_free(List* list);
-void list_foreach(List* list, void (*callback)(List*, Item, int));
 
-Item list_get(List* list, int i);
+int list_size(List* list);
+ListItem list_get(List* list, int i);
+
+void list_add(List* list, ListItem element);
 
 #endif

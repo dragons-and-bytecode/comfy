@@ -31,3 +31,11 @@ string string_lowercase(string str){
     
     return str_lower;
 }
+
+string string_copy(const string str){
+    int len = strlen(str);
+    string copy = malloc(sizeof(char) * (len + 1));
+    strcpy(copy, str);
+    copy[len] = '\0';
+    return copy;
+}

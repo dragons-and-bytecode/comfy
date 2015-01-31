@@ -8,6 +8,23 @@
 
 #include "stdio.h"
 
+void make_targets(string source_name){
+    string source_content = files_read_file(source_name);
+    if (!source_content){
+        ERROR("Could not read %s.", source_name);
+        return;
+    }
+    // 1. make target_c (maybe)
+    // 2. make target_h (maybe)
+    
+    /*
+     * Let any feature simply create an output_content string, from
+     * an input string and a file type (header or source)
+     */
+    
+    free(source_content);
+}
+
 /**
  * 1. 
  */
@@ -24,7 +41,9 @@ int main(int argc, char* argv[])
         if (!files_type_is_regular_file(source_files, i))
             continue;
         
-        printf("* %s\n", files_filename(source_files, i));
+        printf("* %s\n", files_filepath(source_files, i));
+        
+        make_targets(files_filepath(source_files, i));
     }
     
     files_free_files(source_files);

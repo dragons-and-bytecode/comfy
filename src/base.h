@@ -15,11 +15,14 @@ typedef int bool;
 
 #define DEBUG(txt, ...) printf("\x1b[36m" "[DEBUG] " txt "\n" "\x1b[0m", __VA_ARGS__)
 
+#define ERROR(txt, ...) printf("\x1b[31m" "[ERROR] " txt "\n" "\x1b[0m", __VA_ARGS__)
+
 /*
  * String functions
  */
 
 bool string_ends_with(string str, string phrase);
 string string_lowercase(string str);
+string string_copy(const string str);
 
 #endif

@@ -13,6 +13,10 @@ typedef int bool;
 #define false 0
 #endif
 
+#ifndef NULL
+#define NULL 0
+#endif
+
 #define DEBUG(txt, ...) printf("\x1b[36m" "[DEBUG] " txt "\n" "\x1b[0m", __VA_ARGS__)
 
 #define ERROR(txt, ...) printf("\x1b[31m" "[ERROR] " txt "\n" "\x1b[0m", __VA_ARGS__)

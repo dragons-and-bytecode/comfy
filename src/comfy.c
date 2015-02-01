@@ -5,6 +5,7 @@
 #include "base.h"
 #include "args.h"
 #include "files.h"
+#include "features/feature_manager.h"
 
 #include "stdio.h"
 #include "stdlib.h"
@@ -31,7 +32,12 @@ string new_filename_with_type(string file_name, string type){
 
 void make_target_file(string file_name, string source_content){
     string target_content = string_copy(source_content);
-    files_write_file(file_name, target_content);
+    
+    string processed_content = feature_manager_process( file_name, 
+                                                        target_content);
+    files_write_file(file_name, processed_content);
+    
+    free(processed_content);
     free(target_content);    
 }
 
@@ -80,6 +86,8 @@ int main(int argc, char* argv[])
     string source = opt.get(&opt, "source", ".");
     string target = opt.get(&opt, "target", ".");
 
+    feature_manager_init();
+
     Files* source_files = files_list_dir(source);
     
     for (int i = 0; i < files_count(source_files); i++){
@@ -92,6 +100,8 @@ int main(int argc, char* argv[])
     }
     
     files_free_files(source_files);
+    
+    feature_manager_teardown();
 
     return 0;
 }

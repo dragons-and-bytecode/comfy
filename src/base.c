@@ -39,3 +39,9 @@ string string_copy(const string str){
     copy[len] = '\0';
     return copy;
 }
+
+bool string_equals(string a, string b){
+    if (!a) return NULL == b;
+    if (!b) return false;
+    return 0 == strcmp(a, b);
+}

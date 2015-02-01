@@ -18,4 +18,8 @@ bool files_type_is_regular_file(Files* files, int index);
 
 string files_read_file(string file_name);
 
+string files_get_filetype(string file_name);
+
+void files_write_file(string file_name, string content);
+
 #endif

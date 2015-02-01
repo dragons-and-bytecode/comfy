@@ -5,6 +5,8 @@
 #include "list.h"
 #include "stdlib.h"
 #include "asprintf.h"
+#include "string.h"
+#include "sys/stat.h"
 
 
 struct _Files {
@@ -61,6 +63,14 @@ bool files_type_is_regular_file(Files* files, int index){
     return DT_REG == _files_entry(files, index)->d_type;
 }
 
+string files_get_filetype(string file_name){
+    string type = strrchr(file_name, '.');
+    if (type && strlen(type) > 0){
+        type+=1;
+    }
+    return type;
+}
+
 string files_read_file(string file_name){
     FILE* in = fopen(file_name, "rb");
     if (!in){
@@ -78,4 +88,25 @@ string files_read_file(string file_name){
     content[fsize] = '\0';
     
     return content;
+}
+
+bool file_exists(const string filename){
+    struct stat stats;
+    return 0 == stat(filename, &stats);
+}
+
+void files_write_file(string file_name, string content){
+    if (file_exists(file_name)){
+        remove(file_name);
+        if (file_exists(file_name)){
+            ERROR("Could not delete target file %s!", file_name);
+            return;
+        }
+    }
+    
+    FILE* file = fopen(file_name, "w");
+    if (file){
+        fputs(content, file);
+        fclose(file);
+    }
 }

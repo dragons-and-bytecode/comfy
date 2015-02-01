@@ -7,21 +7,66 @@
 #include "files.h"
 
 #include "stdio.h"
+#include "stdlib.h"
+#include "assert.h"
+#include "asprintf.h"
+#include "string.h"
 
-void make_targets(string source_name){
+string get_pure_name(string base, string name){    
+    string pure = name + strlen(base);
+    if ('/' == pure[0] || '\\' == pure[0])
+        pure++;
+    return pure;
+}
+
+string new_filename_with_type(string file_name, string type){
+    string old_type = strrchr(file_name, '.');
+    int base_length = strlen(file_name) - strlen(old_type);
+    int length = base_length + strlen(type);
+    
+    string base_name = malloc((length + 1) * sizeof(char));
+    sprintf(base_name, "%.*s.%s", base_length, file_name, type);
+    return base_name;
+}
+
+void make_target_file(string file_name, string source_content){
+    string target_content = string_copy(source_content);
+    files_write_file(file_name, target_content);
+    free(target_content);    
+}
+
+void make_targets(string source_name, string source_base, string target_base){
     string source_content = files_read_file(source_name);
     if (!source_content){
         ERROR("Could not read %s.", source_name);
         return;
     }
-    // 1. make target_c (maybe)
-    // 2. make target_h (maybe)
     
+    string type = files_get_filetype(source_name);
+    string pure_name = get_pure_name(source_base, source_name);
+    string target_name;
+    asprintf(&target_name, "%s/%s", target_base, pure_name);
+    
+    if (string_equals(type, "h")){
+        make_target_file(target_name, source_content);
+    } else if (string_equals(type, "c")){
+        make_target_file(target_name, source_content);
+    } else if (string_equals(type, "comfy")){
+        string target_c_name = new_filename_with_type(target_name, "c");
+        string target_h_name = new_filename_with_type(target_name, "h");
+        
+        make_target_file(target_c_name, source_content);
+        make_target_file(target_h_name, source_content);
+        
+        free(target_h_name);
+        free(target_c_name);
+    }    
     /*
      * Let any feature simply create an output_content string, from
      * an input string and a file type (header or source)
      */
     
+    free(target_name);
     free(source_content);
 }
 
@@ -43,7 +88,7 @@ int main(int argc, char* argv[])
         
         printf("* %s\n", files_filepath(source_files, i));
         
-        make_targets(files_filepath(source_files, i));
+        make_targets(files_filepath(source_files, i), source, target);
     }
     
     files_free_files(source_files);

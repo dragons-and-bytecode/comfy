@@ -24,5 +24,6 @@ typedef int bool;
 bool string_ends_with(string str, string phrase);
 string string_lowercase(string str);
 string string_copy(const string str);
+bool string_equals(string a, string b);
 
 #endif

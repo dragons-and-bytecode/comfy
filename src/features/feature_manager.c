@@ -16,8 +16,8 @@ void feature_manager_init(){
     header_features = list_new();
     source_features = list_new();
     
-    list_add(header_features, header_includeguard);
     list_add(header_features, header_onlypublic);
+    list_add(header_features, header_includeguard);
     
     list_add(source_features, source_onlyprivate);
 }

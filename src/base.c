@@ -40,6 +40,14 @@ string string_copy(const string str){
     return copy;
 }
 
+string string_trim_front(const string str){
+    string trimmed = str;
+    while (trimmed && trimmed[0] != '\0' && isspace(trimmed[0]))
+        trimmed++;
+    
+    return trimmed;
+}
+
 bool string_equals(const string a, const string b){
     if (!a) return NULL == b;
     if (!b) return false;

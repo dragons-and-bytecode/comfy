@@ -33,9 +33,13 @@ static string _process(string file_name, string content, List* features){
     string processed = string_copy(content);
     
     for (int i = 0; i < list_size(features); i++){
-        string (*feature)(const string name, const string source) = list_get(features, i);
+        string (*feature)(const string, const string) = list_get(features, i);
         
         string next = feature(file_name, processed);
+        if (!next){
+            continue;
+        }
+        
         free(processed);
         processed = next;
     }

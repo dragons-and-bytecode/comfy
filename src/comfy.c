@@ -30,10 +30,11 @@ string new_filename_with_type(string file_name, string type){
     return base_name;
 }
 
-void make_target_file(string file_name, string source_content){
+void make_target_file(string base_dir, string file_name, string source_content){
     string target_content = string_copy(source_content);
+    string simple_name = get_pure_name(base_dir, file_name);
     
-    string processed_content = feature_manager_process( file_name, 
+    string processed_content = feature_manager_process( simple_name, 
                                                         target_content);
     files_write_file(file_name, processed_content);
     
@@ -54,15 +55,15 @@ void make_targets(string source_name, string source_base, string target_base){
     asprintf(&target_name, "%s/%s", target_base, pure_name);
     
     if (string_equals(type, "h")){
-        make_target_file(target_name, source_content);
+        make_target_file(target_base, target_name, source_content);
     } else if (string_equals(type, "c")){
-        make_target_file(target_name, source_content);
+        make_target_file(target_base, target_name, source_content);
     } else if (string_equals(type, "comfy")){
         string target_c_name = new_filename_with_type(target_name, "c");
         string target_h_name = new_filename_with_type(target_name, "h");
         
-        make_target_file(target_c_name, source_content);
-        make_target_file(target_h_name, source_content);
+        make_target_file(target_base, target_c_name, source_content);
+        make_target_file(target_base, target_h_name, source_content);
         
         free(target_h_name);
         free(target_c_name);

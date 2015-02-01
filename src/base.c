@@ -4,7 +4,7 @@
 #include "stdlib.h"
 #include "ctype.h"
 
-bool string_ends_with(string str, string phrase){
+bool string_ends_with(const string str, const string phrase){
     assert(str);
     assert(phrase);
     
@@ -19,7 +19,7 @@ bool string_ends_with(string str, string phrase){
     return 0 == strcmp(&(str[start_index]), phrase);
 }
 
-string string_lowercase(string str){
+string string_lowercase(const string str){
     assert(str);
     
     int str_length = strlen(str);
@@ -40,8 +40,26 @@ string string_copy(const string str){
     return copy;
 }
 
-bool string_equals(string a, string b){
+bool string_equals(const string a, const string b){
     if (!a) return NULL == b;
     if (!b) return false;
     return 0 == strcmp(a, b);
+}
+
+bool string_equals_over_length(const string a, const string b, int length){
+    if (!a) return NULL == b;
+    if (!b) return false;
+    return 0 == strncmp(a, b, length);
+}
+
+void string_replace_chars(string str, char find, char replace){
+  char* found = str;
+
+  while (NULL != found){
+    found = strchr(found, find);
+    if (NULL != found){
+      found[0] = replace;
+      found++;
+    }
+  }
 }

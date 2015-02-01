@@ -4,6 +4,6 @@
 
 string header_onlypublic(string name, string source){
     string xxx;
-    asprintf(&xxx, "Baa! - %s", source);
+    asprintf(&xxx, "%s", source);
     return xxx;
 }

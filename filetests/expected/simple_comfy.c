@@ -3,7 +3,7 @@
 
     /*
      * The simple (intermediate) way, this is separated is, to have every
-     * future header line preceded by a token charakter '°' for now.
+     * future header line preceded by a token charakter '§' for now.
      * 
      * The beginning of a line means, that no Non-whitespace charakter is 
      * allowed on this line before the token
@@ -33,6 +33,6 @@ int some_func(int a, const char* boo){
 void some_private_func(){
     printf("This stuff is private!");
     /* To have a double token:
-    ° This stays in the source and becomes a single tokened line
+    § This stays in the source and becomes a single tokened line
     */
 }

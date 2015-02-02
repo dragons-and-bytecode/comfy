@@ -1,10 +1,12 @@
 #include "header_onlypublic.h"
 #include "source_onlyprivate.h"
+#include "source_unmask_masked_private.h"
 
 #include "asprintf.h"
 #include "string.h"
 #include "stdlib.h"
 #include "ctype.h"
+#include "slre.h"
 
 static const string MASK_STR = "§";
 static const string UNMASK_STR = "§§";
@@ -23,11 +25,14 @@ static string public_line(string line){
     }
 }
 
-typedef struct{
+struct _LineString;
+typedef struct _LineString LineString;
+struct _LineString {
     string text;
     int length;
     bool ignore;
-} LineString;
+    LineString* before;
+};
 
 static LineString process_public_line(LineString line){
      string publine = public_line(line.text);   
@@ -54,6 +59,45 @@ static LineString process_private_line(LineString line){
     }
 }
 
+static LineString unmask_private_line(LineString line){
+    struct slre_cap caps[1];
+    if (0 <= slre_match("^\\s*§(§)",
+                line.text, line.length, caps, 1, 0)){
+        
+        LineString* before = malloc(sizeof(LineString));
+        before->text = line.text;
+        before->length = caps[0].ptr - line.text;
+        
+        return (LineString) {
+            .text = (string) caps[0].ptr,
+            .length = line.length - (caps[0].ptr - line.text),
+            .before = before
+        };
+    }
+    return line;
+}
+
+static string append_line_to_text(string text, LineString line){
+    if (!line.ignore){
+        if (line.before){
+            text = append_line_to_text(text, *line.before);
+            free(line.before);
+            line.before = NULL;
+        }
+        
+        string appended;
+        if (text){
+            asprintf(&appended, "%s%.*s", text, line.length, line.text);
+            free(text);
+        } else {
+            asprintf(&appended, "%.*s", line.length, line.text);
+        }
+        text = appended;
+    }
+    
+    return text;
+}
+
 static string line_by_line( string name, string source, 
                             LineString (*process)(LineString)){
     string processed = NULL;
@@ -68,18 +112,7 @@ static string line_by_line( string name, string source,
             .length = length
         });
             
-        if (!processed_line.ignore){
-            string appended;
-            if (processed){
-                asprintf(&appended, "%s%.*s", 
-                        processed, processed_line.length, processed_line.text);
-                free(processed);
-            } else {
-                asprintf(&appended, "%.*s", 
-                        processed_line.length, processed_line.text);
-            }
-            processed = appended;
-        }
+        processed = append_line_to_text(processed, processed_line);
         
         line = next_line ? next_line + 1 : NULL;
     }
@@ -93,4 +126,8 @@ string header_onlypublic(string name, string source){
 
 string source_onlyprivate(string name, string source){
     return line_by_line(name, source, process_private_line);
+}
+
+string source_unmask_masked_private(string name, string source){
+    return line_by_line(name, source, unmask_private_line);
 }

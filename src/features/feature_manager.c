@@ -7,6 +7,7 @@
 #include "header_includeguard.h"
 #include "header_onlypublic.h"
 #include "source_onlyprivate.h"
+#include "source_unmask_masked_private.h"
 #include "comfy_includeheader.h"
 
 static List* header_features;
@@ -23,6 +24,7 @@ void feature_manager_init(){
     list_add(header_features, header_includeguard);
     
     list_add(source_features, source_onlyprivate);
+    list_add(source_features, source_unmask_masked_private);
     
     list_add(comfy_features, comfy_includeheader);
 }

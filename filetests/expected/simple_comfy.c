@@ -33,6 +33,6 @@ int some_func(int a, const char* boo){
 void some_private_func(){
     printf("This stuff is private!");
     /* To have a double token:
-    § This stays in the source and becomes a single tokened line
+§ This stays in the source and becomes a single tokened line
     */
 }

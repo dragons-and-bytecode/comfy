@@ -41,7 +41,9 @@ static LineString process_public_line(LineString line){
      if (publine && trimmed_chars < line.length){
          return (LineString) {
              .length = line.length - trimmed_chars,
-             .text = publine
+             .text = publine,
+			 .before = NULL,
+			 .ignore = false
          };
      } else {
          return (LineString) {.ignore = true};
@@ -67,11 +69,14 @@ static LineString unmask_private_line(LineString line){
         LineString* before = malloc(sizeof(LineString));
         before->text = line.text;
         before->length = caps[0].ptr - line.text;
+        before->before = NULL;
+        before->ignore = false;
         
         return (LineString) {
-            .text = (string) caps[0].ptr,
-            .length = line.length - (caps[0].ptr - line.text),
-            .before = before
+            .text = (string) caps[0].ptr + caps[0].len,
+            .length = line.length - before->length - caps[0].len,
+            .before = before,
+			.ignore = false
         };
     }
     return line;
@@ -109,7 +114,9 @@ static string line_by_line( string name, string source,
         
         LineString processed_line = process((LineString) {
             .text = line,
-            .length = length
+            .length = length,
+			.before = NULL,
+			.ignore = false
         });
             
         processed = append_line_to_text(processed, processed_line);

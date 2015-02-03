@@ -1,6 +1,6 @@
 # all, test, dependencies, clean
 
-CFLAGS+=-g
+CFLAGS+=-g -std=c11
 CFLAGS+=-Idependencies/include
 
 LDFLAGS+=-Ldependencies/lib 

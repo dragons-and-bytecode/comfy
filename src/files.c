@@ -24,6 +24,7 @@ Files* files_list_dir(string dirname){
     if (d){
         struct dirent* dir_entry;
         while ((dir_entry = readdir(d))){
+            DEBUG("list_add(%s)", dir_entry->d_name);
             list_add(files->dir_entries, dir_entry);
         }
         closedir(d);
@@ -55,6 +56,8 @@ struct dirent* _files_entry(Files* files, int index){
 
 string files_filepath(Files* files, int index){
     string path;
+    DEBUG("asprintf(%s, %%s/%%s, %s, _files_entry(files, %i)->'%s'",
+               pathm files->basepath, index, _files_entry(files, index)->d_name);
     asprintf(&path, "%s/%s", files->basepath, _files_entry(files, index)->d_name);  
     return path;
 }

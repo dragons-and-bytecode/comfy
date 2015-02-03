@@ -57,7 +57,7 @@ struct dirent* _files_entry(Files* files, int index){
 string files_filepath(Files* files, int index){
     string path;
     DEBUG("asprintf(%s, %%s/%%s, %s, _files_entry(files, %i)->'%s'",
-               pathm files->basepath, index, _files_entry(files, index)->d_name);
+               path, files->basepath, index, _files_entry(files, index)->d_name);
     asprintf(&path, "%s/%s", files->basepath, _files_entry(files, index)->d_name);  
     return path;
 }

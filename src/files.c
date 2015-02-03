@@ -24,8 +24,7 @@ Files* files_list_dir(string dirname){
     if (d){
         struct dirent* dir_entry;
         while ((dir_entry = readdir(d))){
-            DEBUG("list_add(%s)", dir_entry->d_name);
-            list_add(files->dir_entries, dir_entry);
+            list_add(files->dir_entries, string_copy(dir_entry->d_name));
         }
         closedir(d);
     }
@@ -50,20 +49,17 @@ int files_count(Files* files){
     return list_size(files->dir_entries);
 }
 
-struct dirent* _files_entry(Files* files, int index){
-    return list_get(files->dir_entries, index);
-}
-
 string files_filepath(Files* files, int index){
     string path;
-    DEBUG("asprintf(%s, %%s/%%s, %s, _files_entry(files, %i)->'%s'",
-               path, files->basepath, index, _files_entry(files, index)->d_name);
-    asprintf(&path, "%s/%s", files->basepath, _files_entry(files, index)->d_name);  
+    asprintf(&path, "%s/%s", files->basepath, list_get(files->dir_entries, index));  
     return path;
 }
 
 bool files_type_is_regular_file(Files* files, int index){
-    return DT_REG == _files_entry(files, index)->d_type;
+    FILE* f = fopen(files_filepath(files, index), "r+");
+    if (!f) return false;
+    fclose(f);
+    return true;
 }
 
 string files_get_filetype(string file_name){

@@ -104,8 +104,9 @@ int main(int argc, char* argv[])
     Files* source_files = files_list_dir(source);
     
     for (int i = 0; i < files_count(source_files); i++){
-        if (!files_type_is_regular_file(source_files, i))
+        if (!files_type_is_regular_file(source_files, i)){
             continue;
+        }
         
         printf("* %s\n", files_filepath(source_files, i));
         

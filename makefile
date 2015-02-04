@@ -6,6 +6,10 @@ CFLAGS+=-Idependencies/include
 LDFLAGS+=-Ldependencies/lib 
 LDLIBS+=-lasprintf -lslre
 
+PREFIX?=/usr/local
+INSTALL_BIN=$(PREFIX)/bin
+INSTALL=install
+
 #DEPEND_DIRS = -I ./dependencies/include -L ./dependencies/lib
 #DEPEND_ARGS = $(DEPEND_DIRS) -lslre -lasprintf
 
@@ -40,6 +44,9 @@ clean:
 	$(RM) filetests/comfy_test
 	$(RM) -r filetests/target
 	$(RM) -r **/*.dSYM
+	
+install:
+	$(INSTALL) build/comfy $(INSTALL_BIN)
 
 cleanDependencies:
 	$(MAKE) -C dependencies clean

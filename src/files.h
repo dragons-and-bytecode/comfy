@@ -8,6 +8,8 @@ typedef struct _Files Files;
 
 Files* files_list_dir(string dirname);
 
+Files* files_list_files(string dirname, char* file_names[], int files_len);
+
 void files_free_files(Files* files);
 
 int files_count(Files* files);

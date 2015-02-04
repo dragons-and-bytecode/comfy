@@ -45,6 +45,50 @@ bool Options_get_flag(Options* self, char* name)
     return 0 <= __argument_index(self, name) ? true : false;
 }
 
+int Options_get_unnamed_length(Options* self){
+    int l = 0;
+
+    bool last_was_name = false;
+    for (int i = 1; i < self->argc; i++){
+        if (!last_was_name){
+            if (__is_argument_name(self, i)){
+                last_was_name = true;
+                continue;
+            } else {
+                l++;
+                continue;
+            }
+        } else {
+            last_was_name = false;
+        }
+    }
+    return l;
+}
+
+char** Options_get_unnamed(Options* self){
+    int size =  self->unnamed_length(self);
+    
+    char** unnamed_opts = malloc(size * sizeof(char*));
+
+    int j = 0;
+    bool last_was_name = false;
+    for (int i = 1; i < self->argc; i++){
+        if (!last_was_name){
+            if (__is_argument_name(self, i)){
+                last_was_name = true;
+                continue;
+            } else {
+                unnamed_opts[j++] = self->argv[i];
+                continue;
+            }
+        } else {
+            last_was_name = false;
+        }
+    }
+
+    return unnamed_opts;
+}
+
 Options parse_args(int argc, char* argv[])
 {
     Options opt;
@@ -53,6 +97,8 @@ Options parse_args(int argc, char* argv[])
     
     opt.get = &Options_get;
     opt.get_flag = &Options_get_flag;
+    opt.unnamed_length = &Options_get_unnamed_length;
+    opt.unnamed = &Options_get_unnamed;
     return opt;
 }
 

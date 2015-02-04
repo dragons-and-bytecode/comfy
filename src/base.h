@@ -18,6 +18,7 @@ typedef int bool;
 #endif
 
 #define DEBUG(txt, ...) printf("\x1b[36m" "[DEBUG] " txt "\n" "\x1b[0m", __VA_ARGS__)
+#define INFO(txt, ...) printf("\x1B[32m" txt "\n" "\x1b[0m", __VA_ARGS__)
 
 #define ERROR(txt, ...) printf("\x1b[31m" "[ERROR] " txt "\n" "\x1b[0m", __VA_ARGS__)
 

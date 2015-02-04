@@ -41,6 +41,9 @@ string process_through_features(string base_dir,
 }
 
 void make_target_file(string base_dir, string file_name, string source_content){
+
+    INFO("(Re)creating %s...", file_name);
+
     string processed_content = process_through_features(base_dir, 
                                                         file_name,
                                                         source_content);
@@ -99,16 +102,24 @@ int main(int argc, char* argv[])
     string source = opt.get(&opt, "source", ".");
     string target = opt.get(&opt, "target", ".");
 
+    int files_given = opt.unnamed_length(&opt);  
+    char** unnamed = opt.unnamed(&opt);
+//    DEBUG("-- %i --", files_given);
+//    for (int i = 0; i < files_given; i++){
+//        DEBUG("%i: %s", i, unnamed[i]);
+//    }
+    
+
     feature_manager_init();
 
-    Files* source_files = files_list_dir(source);
+    Files* source_files = 0 == files_given ? 
+        files_list_dir(source) : 
+        files_list_files(source, unnamed, files_given);
     
     for (int i = 0; i < files_count(source_files); i++){
         if (!files_type_is_regular_file(source_files, i)){
             continue;
         }
-        
-        printf("* %s\n", files_filepath(source_files, i));
         
         make_targets(files_filepath(source_files, i), source, target);
     }

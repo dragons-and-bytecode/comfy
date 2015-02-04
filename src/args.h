@@ -11,6 +11,8 @@ struct _OPTIONS {
     
     char* (*get)(Options*, char*, char*);
     bool (*get_flag)(Options*, char*);
+    int (*unnamed_length) (Options*);
+    char** (*unnamed) (Options*);
 };
 
 

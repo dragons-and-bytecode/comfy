@@ -14,6 +14,19 @@ struct _Files {
     List* dir_entries;
 };
 
+Files* files_list_files(string dirname, char* file_names[], int files_len){
+    Files* files = malloc(sizeof(Files));
+    files->basepath = string_copy(dirname);
+
+    files->dir_entries = list_new();
+
+    for(int i = 0; i < files_len; i++){
+        list_add(files->dir_entries, string_copy(file_names[i]));
+    }
+
+    return files;
+}
+
 Files* files_list_dir(string dirname){
     Files* files = malloc(sizeof(Files));
     files->basepath = string_copy(dirname);

@@ -9,6 +9,7 @@
 #include "source_onlyprivate.h"
 #include "source_unmask_masked_private.h"
 #include "comfy_includeheader.h"
+#include "comfy_keyword_public.h"
 
 static List* header_features;
 static List* source_features;
@@ -26,6 +27,7 @@ void feature_manager_init(){
     list_add(source_features, source_onlyprivate);
     list_add(source_features, source_unmask_masked_private);
     
+    list_add(comfy_features, comfy_keyword_public);
     list_add(comfy_features, comfy_includeheader);
 }
 

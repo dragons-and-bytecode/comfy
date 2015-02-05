@@ -103,6 +103,18 @@ char* test_expected_file(char* expected_file, char* target_file){
     return NULL;
 }
 
+int string_ends_with(const char* str, const char* phrase){  
+    int str_length = strlen(str);
+    int phrase_length = strlen(phrase);
+    
+    if (str_length < phrase_length)
+        return false;
+    
+    int start_index = str_length - phrase_length;
+    
+    return 0 == strcmp(&(str[start_index]), phrase);
+}
+
 string_array test_with_directory(char* dir_name, char* reference_dir,
                         char* (*test_func)(char*, char*)){
     
@@ -114,7 +126,10 @@ string_array test_with_directory(char* dir_name, char* reference_dir,
     struct dirent *ent;
     if ((dir = opendir (dir_name)) != NULL) {
         while ((ent = readdir (dir)) != NULL) {
-            if (0 == strcmp(".", ent->d_name) || 0 == strcmp("..", ent->d_name))
+            if (0 == strcmp(".", ent->d_name) 
+                    || 0 == strcmp("..", ent->d_name)
+                    || string_ends_with(ent->d_name, "~")
+                    || string_ends_with(ent->d_name, ".swp"))
                 continue;
             
             char* ref_file;

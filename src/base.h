@@ -35,4 +35,7 @@ bool string_equals(const string a, const string b);
 bool string_equals_over_length(const string a, const string b, int length);
 
 void string_replace_chars(string str, char find, char replace);
+string string_replace_all_in(string str, string find, string replace);
+
 #endif
+

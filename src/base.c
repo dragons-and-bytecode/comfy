@@ -71,3 +71,58 @@ void string_replace_chars(string str, char find, char replace){
     }
   }
 }
+
+string string_replace_all_in(string str, string find, string replace){
+    int find_len =  strlen(find);
+    int repl_len = strlen(replace);
+    int grow_factor = repl_len - find_len;
+    int replacements = 0;
+    int old_length = strlen(str);
+
+    /*
+     * count replacements
+     */
+    for (int i = 0; i < old_length; replacements++)
+    {
+        string found = strstr(str+i, find);
+        if (found){
+            i = found - str + find_len;
+        } else {
+            break;
+        }
+    }
+
+    /*
+     * create new string
+     */
+    int growth = grow_factor * replacements;
+    int new_length =(old_length + growth);
+    string newstr = malloc((new_length + 1) * sizeof(char));
+    newstr[new_length] = '\0';
+
+    int last_i = 0;
+    int i_in_new = 0;
+    for (int i = 0; i < old_length;)
+    {
+        string found = strstr(str+i, find);
+        if (found){
+            i = found - str;
+            int copy_size = i - last_i;
+            
+            strncpy(newstr + i_in_new, str + last_i, copy_size);
+            i_in_new += copy_size;
+            strcpy(newstr + i_in_new, replace);
+            i_in_new += repl_len;
+
+            i += find_len;
+            last_i = i;
+        } else {
+            break;
+        }
+    }
+
+    strcpy(newstr + i_in_new, str + last_i);
+
+    return newstr;
+}
+

@@ -7,5 +7,6 @@ void feature_manager_init();
 void feature_manager_teardown();
 
 string feature_manager_process(string file_name, string content);
+bool feature_manager_should_create_header(string content);
 
 #endif

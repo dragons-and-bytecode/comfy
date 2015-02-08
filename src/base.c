@@ -7,28 +7,28 @@
 bool string_ends_with(const string str, const string phrase){
     assert(str);
     assert(phrase);
-    
+
     int str_length = strlen(str);
     int phrase_length = strlen(phrase);
-    
+
     if (str_length < phrase_length)
         return false;
-    
+
     int start_index = str_length - phrase_length;
-    
+
     return 0 == strcmp(&(str[start_index]), phrase);
 }
 
 string string_lowercase(const string str){
     assert(str);
-    
+
     int str_length = strlen(str);
     string str_lower = malloc((str_length + 1) * sizeof(char));
     for (int i = 0; i < str_length; i++)
         str_lower[i] = tolower(str[i]);
-    
+
     str_lower[str_length] = '\0';
-    
+
     return str_lower;
 }
 
@@ -44,7 +44,7 @@ string string_trim_front(const string str){
     string trimmed = str;
     while (trimmed && trimmed[0] != '\0' && isspace(trimmed[0]))
         trimmed++;
-    
+
     return trimmed;
 }
 
@@ -73,11 +73,15 @@ void string_replace_chars(string str, char find, char replace){
 }
 
 string string_replace_all_in(string str, string find, string replace){
+    return string_replace_all_in_sized(str, strlen(str), find, replace);
+}
+
+string string_replace_all_in_sized(string str, int length, string find, string replace){
     int find_len =  strlen(find);
     int repl_len = strlen(replace);
     int grow_factor = repl_len - find_len;
     int replacements = 0;
-    int old_length = strlen(str);
+    int old_length = length;
 
     /*
      * count replacements
@@ -85,13 +89,12 @@ string string_replace_all_in(string str, string find, string replace){
     for (int i = 0; i < old_length; replacements++)
     {
         string found = strstr(str+i, find);
-        if (found){
+        if (found && found - str < old_length){
             i = found - str + find_len;
         } else {
             break;
         }
     }
-
     /*
      * create new string
      */
@@ -100,15 +103,19 @@ string string_replace_all_in(string str, string find, string replace){
     string newstr = malloc((new_length + 1) * sizeof(char));
     newstr[new_length] = '\0';
 
+
     int last_i = 0;
     int i_in_new = 0;
     for (int i = 0; i < old_length;)
     {
         string found = strstr(str+i, find);
+        if (found - str >= old_length)
+            break;
+
         if (found){
             i = found - str;
             int copy_size = i - last_i;
-            
+
             strncpy(newstr + i_in_new, str + last_i, copy_size);
             i_in_new += copy_size;
             strcpy(newstr + i_in_new, replace);
@@ -121,8 +128,11 @@ string string_replace_all_in(string str, string find, string replace){
         }
     }
 
-    strcpy(newstr + i_in_new, str + last_i);
+    int tail_length = length - last_i;
+    if (0 < tail_length)
+    {
+        strncpy(newstr + i_in_new, str + last_i, tail_length);
+    }
 
     return newstr;
 }
-

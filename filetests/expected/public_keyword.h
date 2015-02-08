@@ -12,11 +12,11 @@
 * 3. other keywords and the return value in no particular order
 * 4. an identifier/name
 * 5. the parameters section
-* 
+*
 * We don't care about the method body here.
 *
 * The keyword is the extendedn, in that:
-* 
+*
 * 1. the keyword is removed from the method head.
 * 2. the method head is duplicated as an abstract definition (ending with ';')
 *    above the original method head.
@@ -25,6 +25,7 @@
 *    prepended with '§', so that it will be printed into the header.
 */
 int** publicifier(void* things[], int x);
+void without_doc();
 /**
 * And a third function for good measure.
 */

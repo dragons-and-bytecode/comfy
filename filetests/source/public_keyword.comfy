@@ -18,11 +18,11 @@ void stuff(){
  * 3. other keywords and the return value in no particular order
  * 4. an identifier/name
  * 5. the parameters section
- * 
+ *
  * We don't care about the method body here.
  *
  * The keyword is the extendedn, in that:
- * 
+ *
  * 1. the keyword is removed from the method head.
  * 2. the method head is duplicated as an abstract definition (ending with ';')
  *    above the original method head.
@@ -37,8 +37,7 @@ public int** publicifier(void* things[], int x)
 }
 
 public void without_doc(){
-    //TODO at the moment the public keyword does only work on methods with
-    //     proper documentation
+    //works without doc string as well.
     int x = 42;
 }
 
@@ -50,5 +49,3 @@ int foo(){return 1;}
 public char** stuffings(int x){
     return NULL;
 }
-
-

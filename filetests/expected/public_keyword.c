@@ -13,10 +13,8 @@ int** publicifier(void* things[], int x)
     int* y = &x;
     return &y;
 }
-
-public void without_doc(){
-    //TODO at the moment the public keyword does only work on methods with
-    //     proper documentation
+void without_doc(){
+    //works without doc string as well.
     int x = 42;
 }
 
@@ -25,5 +23,3 @@ int foo(){return 1;}
 char** stuffings(int x){
     return NULL;
 }
-
-

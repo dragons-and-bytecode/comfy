@@ -48,24 +48,40 @@ static string append_str_to(string target, string str){
 
 static int match_re(string source, int start, struct slre_cap* groups, string* match_start){
     int len = strlen(source) - start;
-    int bytes_read;
 
-    bytes_read = slre_match(RE_PUBLIC_DOC, source + start, len, groups, 2, 0);
+    struct slre_cap groups_with_doc[2];
+    struct slre_cap groups_without_doc[2];
 
-    //if no match, try without documentation
-    if (0 > bytes_read)
+    int withdoc = slre_match(RE_PUBLIC_DOC, source + start, len, groups_with_doc, 2, 0);
+    int withoutdoc = slre_match(RE_PUBLIC, source + start, len, groups_without_doc, 2, 0);
+
+
+    if ((0 <= withdoc && 0 > withoutdoc)
+            || (0 <= withdoc
+                && groups_with_doc[0].ptr < groups_without_doc[0].ptr))
     {
-        bytes_read = slre_match(RE_PUBLIC, source + start, len, groups, 2, 0);
-        if (0 <= bytes_read){
-            *match_start = (string) groups[0].ptr;
-            groups[0].ptr = NULL;
-            groups[0].len = 0;
-        }
-    } else {
+        //With doc
+        groups[0].ptr = groups_with_doc[0].ptr;
+        groups[0].len = groups_with_doc[0].len;
+        groups[1].ptr = groups_with_doc[1].ptr;
+        groups[1].len = groups_with_doc[1].len;
         *match_start = (string) groups[0].ptr;
+        return withdoc;
     }
-
-    return bytes_read;
+    else if ((0 <= withoutdoc && 0 > withdoc)
+            || (0 <= withoutdoc
+                && groups_without_doc[0].ptr < groups_with_doc[0].ptr))
+    {
+        //Without doc
+        groups[0].ptr = NULL;
+        groups[0].len = 0;
+        groups[1].ptr = groups_without_doc[1].ptr;
+        groups[1].len = groups_without_doc[1].len;
+        *match_start = (string) groups_without_doc[0].ptr;
+        return withoutdoc;
+    } else {
+        return -1;
+    }
 }
 
 string comfy_keyword_public(string name, string source)

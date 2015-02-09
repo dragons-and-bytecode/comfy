@@ -6,6 +6,7 @@
 #include "args.h"
 #include "files.h"
 #include "features/feature_manager.h"
+#include "dependency_tale.h"
 
 #include "stdio.h"
 #include "stdlib.h"
@@ -117,38 +118,43 @@ int main(int argc, char* argv[])
     string source = opt.get(&opt, "source", ".");
     string target = opt.get(&opt, "target", ".");
 
-    bool make_headers = opt.get_flag(&opt, "headers");
-    bool make_sources = opt.get_flag(&opt, "c-files");
-    DEBUG("Headers %i, Sources %i", make_headers, make_sources);
-    unless (make_headers or make_sources){
-        make_headers = true;
-        make_sources = true;
-    }
-
-    DEBUG("Headers %i, Sources %i", make_headers, make_sources);
+    bool tell_depends = opt.get_flag(&opt, "tell");
 
     int files_given = opt.unnamed_length(&opt);
     char** unnamed = opt.unnamed(&opt);
-
-
-    feature_manager_init();
 
     Files* source_files = 0 == files_given ?
         files_list_dir(source) :
         files_list_files(source, unnamed, files_given);
 
-    for (int i = 0; i < files_count(source_files); i++){
-        if (!files_type_is_regular_file(source_files, i)){
-            continue;
+    if (tell_depends)
+    {
+        print_dependency_headers(source, source_files);
+    } else {
+        bool make_headers = opt.get_flag(&opt, "headers");
+        bool make_sources = opt.get_flag(&opt, "c-files");
+
+        unless (make_headers or make_sources){
+            make_headers = true;
+            make_sources = true;
         }
 
-        make_targets(files_filepath(source_files, i), source, target,
-                        make_headers, make_sources);
+        feature_manager_init();
+
+        for (int i = 0; i < files_count(source_files); i++){
+            if (!files_type_is_regular_file(source_files, i)){
+                continue;
+            }
+
+            make_targets(files_filepath(source_files, i), source, target,
+                            make_headers, make_sources);
+        }
+
+        feature_manager_teardown();
     }
 
     files_free_files(source_files);
 
-    feature_manager_teardown();
 
     return 0;
 }

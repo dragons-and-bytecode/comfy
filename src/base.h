@@ -41,6 +41,15 @@ typedef int bool;
 /*
  * String functions
  */
+typedef struct {
+    string text;
+    int length;
+} String;
+
+typedef struct {
+    String* tokens;
+    int size;
+} TokenList;
 
 bool string_ends_with(const string str, const string phrase);
 string string_lowercase(const string str);
@@ -53,5 +62,7 @@ bool string_equals_over_length(const string a, const string b, int length);
 void string_replace_chars(string str, char find, char replace);
 string string_replace_all_in(string str, string find, string replace);
 string string_replace_all_in_sized(string str, int length, string find, string replace);
+
+TokenList string_as_lines(string str);
 
 #endif

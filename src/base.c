@@ -136,3 +136,38 @@ string string_replace_all_in_sized(string str, int length, string find, string r
 
     return newstr;
 }
+
+static int string_count_lines(string str){
+    int i = 0;
+    string next = str;
+    string end_of_str = str + strlen(str);
+    for (i = 0; next < end_of_str and (next = strstr(next, "\n")); i++)
+        next++;
+
+    return i;
+}
+
+TokenList string_as_lines(const string str)
+{
+    int count = string_count_lines(str);
+
+    TokenList list = {
+        .tokens = malloc(count * sizeof(String)),
+        .size = count
+    };
+
+    string this = str;
+    string next = str;
+    string end_of_str = str + strlen(str);
+    for (int i = 0; next < end_of_str and (next = strstr(next, "\n")); i++)
+    {
+        int len = next - this;
+        //DEBUG("%i :: %3i :: %3i - %.*s", count, i, len, len, this);
+        list.tokens[i] = (String){.text=this, .length=len};
+
+        next++;
+        this = next;
+    }
+
+    return list;
+}

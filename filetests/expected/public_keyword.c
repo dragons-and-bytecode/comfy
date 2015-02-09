@@ -3,6 +3,9 @@
  * The public keyword test
  */
 
+#include "simple_comfy.h"
+#include "foobar.h"
+
 void stuff(){
     //This has nothing to do with anything
     int x = 1;

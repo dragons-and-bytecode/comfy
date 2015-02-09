@@ -52,7 +52,11 @@ void make_target_file(string base_dir, string file_name, string source_content){
     free(processed_content);
 }
 
-void make_targets(string source_name, string source_base, string target_base){
+void make_targets(  string source_name,
+                    string source_base,
+                    string target_base,
+                    bool make_headers,
+                    bool make_sources){
     string source_content = files_read_file(source_name);
     if (!source_content){
         ERROR("Could not read %s.", source_name);
@@ -64,20 +68,28 @@ void make_targets(string source_name, string source_base, string target_base){
     string target_name;
     asprintf(&target_name, "%s/%s", target_base, pure_name);
 
-    if (string_equals(type, "h")){
+    if (make_headers and string_equals(type, "h"))
+    {
         make_target_file(target_base, target_name, source_content);
-    } else if (string_equals(type, "c")){
+    }
+    else if (make_sources and string_equals(type, "c"))
+    {
         make_target_file(target_base, target_name, source_content);
-    } else if (string_equals(type, "comfy")){
+    }
+    else if (string_equals(type, "comfy"))
+    {
         string comfy_content = process_through_features(target_base,
                                                         target_name,
                                                         source_content);
 
-        string target_c_name = new_filename_with_type(target_name, "c");
-        make_target_file(target_base, target_c_name, comfy_content);
-        free(target_c_name);
+        if (make_sources)
+        {
+            string target_c_name = new_filename_with_type(target_name, "c");
+            make_target_file(target_base, target_c_name, comfy_content);
+            free(target_c_name);
+        }
 
-        if (feature_manager_should_create_header(comfy_content))
+        if (make_headers and feature_manager_should_create_header(comfy_content))
         {
           string target_h_name = new_filename_with_type(target_name, "h");
           make_target_file(target_base, target_h_name, comfy_content);
@@ -105,12 +117,18 @@ int main(int argc, char* argv[])
     string source = opt.get(&opt, "source", ".");
     string target = opt.get(&opt, "target", ".");
 
+    bool make_headers = opt.get_flag(&opt, "headers");
+    bool make_sources = opt.get_flag(&opt, "c-files");
+    DEBUG("Headers %i, Sources %i", make_headers, make_sources);
+    unless (make_headers or make_sources){
+        make_headers = true;
+        make_sources = true;
+    }
+
+    DEBUG("Headers %i, Sources %i", make_headers, make_sources);
+
     int files_given = opt.unnamed_length(&opt);
     char** unnamed = opt.unnamed(&opt);
-//    DEBUG("-- %i --", files_given);
-//    for (int i = 0; i < files_given; i++){
-//        DEBUG("%i: %s", i, unnamed[i]);
-//    }
 
 
     feature_manager_init();
@@ -124,7 +142,8 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        make_targets(files_filepath(source_files, i), source, target);
+        make_targets(files_filepath(source_files, i), source, target,
+                        make_headers, make_sources);
     }
 
     files_free_files(source_files);

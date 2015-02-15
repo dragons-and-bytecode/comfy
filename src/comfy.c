@@ -23,11 +23,17 @@ string get_pure_name(string base, string name){
 
 string new_filename_with_type(string file_name, string type){
     string old_type = strrchr(file_name, '.');
+    if (!old_type)
+    {
+        old_type = file_name+strlen(file_name);
+    } else {
+        old_type++;
+    }
     int base_length = strlen(file_name) - strlen(old_type);
     int length = base_length + strlen(type);
 
     string base_name = malloc((length + 1) * sizeof(char));
-    sprintf(base_name, "%.*s.%s", base_length, file_name, type);
+    sprintf(base_name, "%.*s%s", base_length, file_name, type);
     return base_name;
 }
 

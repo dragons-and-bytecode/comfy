@@ -72,6 +72,13 @@ void string_replace_chars(string str, char find, char replace){
   }
 }
 
+int string_trimmed_length(const string str, int length)
+{
+    int trim;
+    for (trim = 0; 0 < length - trim && isspace(str[trim - 1]); trim++);
+    return length - trim;
+}
+
 string string_replace_all_in(string str, string find, string replace){
     return string_replace_all_in_sized(str, strlen(str), find, replace);
 }

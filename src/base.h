@@ -55,6 +55,7 @@ bool string_ends_with(const string str, const string phrase);
 string string_lowercase(const string str);
 string string_copy(const string str);
 string string_trim_front(const string str);
+int string_trimmed_length(const string str, int length);
 
 bool string_equals(const string a, const string b);
 bool string_equals_over_length(const string a, const string b, int length);

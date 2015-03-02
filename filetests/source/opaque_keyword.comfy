@@ -13,3 +13,11 @@ opaque struct Rainbow {
     int* colors;
     bool has_gold;
 };
+
+int foo(){return -1;}
+
+opaque struct should_also_work
+{
+    int without;
+    bool docstring;
+}

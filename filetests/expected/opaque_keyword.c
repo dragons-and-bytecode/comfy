@@ -6,8 +6,16 @@
  * 3. contains the actual body of the struct in the c source file.
  */
 
-struct _Rainbow{
+struct _Rainbow {
     int length;
     int* colors;
     bool has_gold;
 };
+
+int foo(){return -1;}
+
+struct _should_also_work
+{
+    int without;
+    bool docstring;
+}

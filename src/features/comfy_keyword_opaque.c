@@ -5,14 +5,19 @@
 #include "slre.h"
 #include "stdlib.h"
 
-static const string RE_OPAQUE = "(\\n\\s*opaque\\s+struct)\\s+([^;{}]+)\\s*{";
+static const string RE_OPAQUE = "\\n(\\s*?opaque\\s+struct)\\s+([^;{}]+)\\s*{";
 static const string RE_OPAQUE_DOC = "(/\\*.*?\\*/)\\s*\\n\\s*opaque\\s+struct\\s+([^;{}]+)\\s*{";
 
 
 string append_str(string first, string second, int copy_length)
 {
     string ret_val;
-    asprintf(&ret_val, "%s%.*s", first, copy_length, second);
+    if (!first)
+    {
+        asprintf(&ret_val, "%.*s", copy_length, second);
+    } else {
+        asprintf(&ret_val, "%s%.*s", first, copy_length, second);
+    }
     return ret_val;
 }
 
@@ -29,16 +34,18 @@ string append_str(string first, string second, int copy_length)
  *     §typedef struct _Foobar Foobar;
  *     struct _Foobar { ... };
  */
-string comfy_keyword_opaque(string name, string source)
+string _comfy_keyword_opaque(string name, string source, bool with_doc)
 {
-    string target;
+    const string regex = with_doc ? RE_OPAQUE_DOC : RE_OPAQUE;
+
+    string target = NULL;
 
     struct slre_cap groups[2];
 
     bool any_match = false;
     int match = 0;
     string source_ptr = source;
-    while (0 <= (match = slre_match(RE_OPAQUE_DOC,
+    while (0 <= (match = slre_match(regex,
                                     source_ptr,
                                     strlen(source_ptr),
                                     groups, 2, 0)))
@@ -54,19 +61,37 @@ string comfy_keyword_opaque(string name, string source)
         /*
          * append replacement here.
          */
-        string docstr = string_replace_all_in_sized(
-                    groups[0].ptr, groups[0].len, "\n", "\n§ ");
-        string replacement;
         int name_length = string_trimmed_length(groups[1].ptr, groups[1].len);
-        asprintf(&replacement,
-            "§ %s\n§ struct _%.*s;\n§ typedef struct _%.*s %.*s;\nstruct _%.*s",
-            docstr,
+        groups[1].len = name_length;
+        string structdef;
+        asprintf(&structdef,
+            "§ struct _%.*s;\n§ typedef struct _%.*s %.*s;\nstruct _%.*s",
             name_length, groups[1].ptr,
             name_length, groups[1].ptr,
             name_length, groups[1].ptr,
             name_length, groups[1].ptr);
 
-        target = append_str(target, replacement, strlen(replacement));
+        if (with_doc){
+            string docstr = string_replace_all_in_sized(
+                        groups[0].ptr, groups[0].len, "\n", "\n§ ");
+            string replacement;
+            asprintf(&replacement,
+                "§ %s\n%s", docstr, structdef);
+
+            target = append_str(target, replacement, strlen(replacement));
+
+            free(docstr);
+            docstr = NULL;
+
+            free(replacement);
+            replacement = NULL;
+        } else {
+            target = append_str(target, "\n", strlen("\n"));
+            target = append_str(target, structdef, strlen(structdef));
+        }
+
+        free(structdef);
+        structdef = NULL;
 
         source_ptr = groups[1].ptr + groups[1].len;
     }
@@ -82,4 +107,17 @@ string comfy_keyword_opaque(string name, string source)
     }
 
     return target;
+}
+
+string comfy_keyword_opaque(string name, string source)
+{
+    string t1 = _comfy_keyword_opaque(name, source, true);
+    string t2 = _comfy_keyword_opaque(name, t1 ? t1 : source, false);
+    if (t1)
+    {
+        free(t1);
+        t1 = NULL;
+    }
+
+    return t2;
 }

@@ -6,5 +6,7 @@
  */
 struct _Rainbow;
 typedef struct _Rainbow Rainbow;
+struct _should_also_work;
+typedef struct _should_also_work should_also_work;
 
 #endif
